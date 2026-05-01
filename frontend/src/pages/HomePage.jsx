@@ -45,7 +45,13 @@ const HomePage = () => {
           <h2 className="text-xl font-bold text-gray-800 mb-2">
             안녕하세요, {user?.nickname}님!
           </h2>
-          <p className="text-gray-500 text-sm">오늘도 단어 학습을 시작해볼까요?</p>
+          <p className="text-gray-500 text-sm mb-6">오늘도 단어 학습을 시작해볼까요?</p>
+          <button
+            onClick={() => navigate("/words")}
+            className="bg-indigo-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors"
+          >
+            단어장 열기
+          </button>
         </motion.div>
       </main>
     </div>

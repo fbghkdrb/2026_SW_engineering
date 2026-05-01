@@ -6,6 +6,7 @@ import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
 import MyPage from "./pages/MyPage";
 import AdminWordPage from "./pages/AdminWordPage";
+import WordListPage from "./pages/WordListPage";
 
 const App = () => {
   return (
@@ -19,6 +20,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <HomePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/words"
+            element={
+              <PrivateRoute>
+                <WordListPage />
               </PrivateRoute>
             }
           />
