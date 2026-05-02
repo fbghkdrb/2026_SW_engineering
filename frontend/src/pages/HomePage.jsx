@@ -46,12 +46,20 @@ const HomePage = () => {
             안녕하세요, {user?.nickname}님!
           </h2>
           <p className="text-gray-500 text-sm mb-6">오늘도 단어 학습을 시작해볼까요?</p>
-          <button
-            onClick={() => navigate("/words")}
-            className="bg-indigo-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors"
-          >
-            단어장 열기
-          </button>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => navigate("/words")}
+              className="bg-indigo-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors"
+            >
+              단어장 열기
+            </button>
+            <button
+              onClick={() => navigate("/quiz")}
+              className="bg-white text-indigo-600 text-sm font-semibold px-6 py-2.5 rounded-xl border border-indigo-200 hover:bg-indigo-50 transition-colors"
+            >
+              퀴즈 풀기
+            </button>
+          </div>
         </motion.div>
       </main>
     </div>

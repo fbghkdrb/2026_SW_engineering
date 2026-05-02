@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage";
 import MyPage from "./pages/MyPage";
 import AdminWordPage from "./pages/AdminWordPage";
 import WordListPage from "./pages/WordListPage";
+import QuizPage from "./pages/QuizPage";
+import QuizResultPage from "./pages/QuizResultPage";
 
 const App = () => {
   return (
@@ -44,6 +46,22 @@ const App = () => {
             element={
               <PrivateRoute adminOnly>
                 <AdminWordPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/quiz"
+            element={
+              <PrivateRoute>
+                <QuizPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/quiz/result"
+            element={
+              <PrivateRoute>
+                <QuizResultPage />
               </PrivateRoute>
             }
           />
