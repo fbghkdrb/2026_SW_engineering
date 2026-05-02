@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/words/**").authenticated()
                 .requestMatchers("/api/quiz/**").authenticated()
+                .requestMatchers("/api/character/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(

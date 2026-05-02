@@ -17,7 +17,10 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     WORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 단어입니다."),
     QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 퀴즈입니다."),
-    QUIZ_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 퀴즈입니다.");
+    QUIZ_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 퀴즈입니다."),
+    CHARACTER_NOT_FOUND(HttpStatus.NOT_FOUND, "캐릭터를 찾을 수 없습니다."),
+    CHARACTER_NOT_FAINT(HttpStatus.BAD_REQUEST, "기절 상태가 아닌 캐릭터는 부활시킬 수 없습니다."),
+    INSUFFICIENT_COIN(HttpStatus.BAD_REQUEST, "코인이 부족합니다.");
 
     private final HttpStatus status;
     private final String message;

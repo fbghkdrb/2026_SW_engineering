@@ -3,6 +3,7 @@ package com.__SW_engineering.wordtama.domain.auth.service;
 import com.__SW_engineering.wordtama.domain.auth.dto.*;
 import com.__SW_engineering.wordtama.domain.auth.entity.RefreshToken;
 import com.__SW_engineering.wordtama.domain.auth.repository.RefreshTokenRepository;
+import com.__SW_engineering.wordtama.domain.character.service.CharacterService;
 import com.__SW_engineering.wordtama.domain.user.entity.User;
 import com.__SW_engineering.wordtama.domain.user.repository.UserRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
@@ -22,6 +23,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CharacterService characterService;
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -37,6 +39,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        characterService.createCharacter(user);
     }
 
     @Transactional
