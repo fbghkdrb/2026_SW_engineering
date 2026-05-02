@@ -15,7 +15,9 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "RefreshToken이 존재하지 않습니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
-    WORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 단어입니다.");
+    WORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 단어입니다."),
+    QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 퀴즈입니다."),
+    QUIZ_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 퀴즈입니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/users/check").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/words/**").authenticated()
+                .requestMatchers("/api/quiz/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(
