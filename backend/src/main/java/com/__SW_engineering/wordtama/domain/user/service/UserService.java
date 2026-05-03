@@ -1,9 +1,14 @@
 package com.__SW_engineering.wordtama.domain.user.service;
 
+import com.__SW_engineering.wordtama.domain.auth.repository.RefreshTokenRepository;
+import com.__SW_engineering.wordtama.domain.character.repository.CharacterRepository;
+import com.__SW_engineering.wordtama.domain.quiz.repository.QuizAnswerRepository;
+import com.__SW_engineering.wordtama.domain.quiz.repository.QuizRepository;
 import com.__SW_engineering.wordtama.domain.user.dto.NicknameUpdateRequest;
 import com.__SW_engineering.wordtama.domain.user.dto.UserResponse;
 import com.__SW_engineering.wordtama.domain.user.entity.User;
 import com.__SW_engineering.wordtama.domain.user.repository.UserRepository;
+import com.__SW_engineering.wordtama.domain.word.repository.UserWordRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserWordRepository userWordRepository;
+    private final QuizAnswerRepository quizAnswerRepository;
+    private final QuizRepository quizRepository;
+    private final CharacterRepository characterRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional(readOnly = true)
     public UserResponse getMe(Long userId) {
@@ -31,6 +41,11 @@ public class UserService {
     @Transactional
     public void deleteUser(Long userId) {
         User user = findById(userId);
+        quizAnswerRepository.deleteByQuiz_User_Id(userId);
+        quizRepository.deleteByUser_Id(userId);
+        userWordRepository.deleteByUser_Id(userId);
+        characterRepository.deleteByUserId(userId);
+        refreshTokenRepository.deleteByUserId(userId);
         userRepository.delete(user);
     }
 

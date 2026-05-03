@@ -12,4 +12,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
     // 통계 계산용: 해당 유저의 제출 완료된 퀴즈 전체 조회
     List<Quiz> findByUser_IdAndCompletedTrue(Long userId);
+
+    void deleteByUser_Id(Long userId);
 }

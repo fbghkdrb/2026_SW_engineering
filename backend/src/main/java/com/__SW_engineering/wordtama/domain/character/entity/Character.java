@@ -63,4 +63,14 @@ public class Character {
         this.vitality = 100;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateVitality(int delta) {
+        this.vitality = Math.max(0, Math.min(100, this.vitality + delta));
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateStatus(CharacterStatus newStatus) {
+        this.status = newStatus;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

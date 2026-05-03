@@ -1,5 +1,6 @@
 package com.__SW_engineering.wordtama.domain.quiz.service;
 
+import com.__SW_engineering.wordtama.domain.character.service.CharacterService;
 import com.__SW_engineering.wordtama.domain.quiz.dto.*;
 import com.__SW_engineering.wordtama.domain.quiz.entity.Quiz;
 import com.__SW_engineering.wordtama.domain.quiz.entity.QuizAnswer;
@@ -30,6 +31,7 @@ public class QuizService {
     private final QuizAnswerRepository quizAnswerRepository;
     private final WordRepository wordRepository;
     private final UserRepository userRepository;
+    private final CharacterService characterService;
 
     @Transactional(readOnly = true)
     public List<QuizQuestionResponse> getQuizQuestions(Integer day) {
@@ -100,6 +102,7 @@ public class QuizService {
         int correctCount = (int) answers.stream().filter(QuizAnswer::isCorrect).count();
 
         quiz.complete(totalCount, correctCount);
+        characterService.applyQuizResult(userId, correctCount, totalCount);
 
         List<WrongWordDto> wrongWords = answers.stream()
                 .filter(a -> !a.isCorrect())
