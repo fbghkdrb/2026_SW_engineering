@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { getDays, getWords } from "../api/wordApi";
 import WordCard from "../components/WordCard";
+import ProgressBar from "../components/ProgressBar";
 import { useAuth } from "../context/AuthContext";
+import useProgress from "../hooks/useProgress";
 
 const WordListPage = () => {
   const navigate = useNavigate();
@@ -15,6 +17,9 @@ const WordListPage = () => {
   const [loadingDays, setLoadingDays] = useState(true);
   const [loadingWords, setLoadingWords] = useState(false);
   const [error, setError] = useState(null);
+
+  const { progress } = useProgress();
+  const completedDaySet = new Set(progress?.completedDayList ?? []);
 
   useEffect(() => {
     const fetchDays = async () => {
@@ -102,6 +107,11 @@ const WordListPage = () => {
           <div className="bg-red-50 text-red-500 text-sm rounded-xl px-4 py-3">{error}</div>
         )}
 
+        {/* 전체 진도율 바 */}
+        {progress && (
+          <ProgressBar completed={progress.completedDays} total={progress.totalDays} />
+        )}
+
         {/* Day 목록 */}
         {loadingDays ? (
           <div className="text-center text-gray-400 py-12">불러오는 중...</div>
@@ -112,6 +122,7 @@ const WordListPage = () => {
                 key={d.day}
                 data={d}
                 isSelected={selectedDay === d.day}
+                isCompleted={completedDaySet.has(d.day)}
                 onClick={() => handleSelectDay(d.day)}
               />
             ))}
@@ -158,7 +169,7 @@ const WordListPage = () => {
 };
 
 /** Day 진도율 카드 */
-const DayCard = ({ data, isSelected, onClick }) => {
+const DayCard = ({ data, isSelected, isCompleted, onClick }) => {
   const pct = Math.round(data.progress);
   return (
     <motion.button
@@ -170,9 +181,23 @@ const DayCard = ({ data, isSelected, onClick }) => {
           : "bg-white text-gray-800 hover:shadow-md"
       }`}
     >
-      <p className={`text-xs font-semibold mb-1 ${isSelected ? "text-indigo-200" : "text-gray-400"}`}>
-        Day {data.day}
-      </p>
+      <div className="flex items-center justify-between mb-1">
+        <p className={`text-xs font-semibold ${isSelected ? "text-indigo-200" : "text-gray-400"}`}>
+          Day {data.day}
+        </p>
+        {/* 학습 완료 뱃지 */}
+        {isCompleted && (
+          <span
+            className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${
+              isSelected
+                ? "bg-white text-indigo-600"
+                : "bg-green-100 text-green-600"
+            }`}
+          >
+            완료
+          </span>
+        )}
+      </div>
       <p className="text-lg font-bold mb-2">{pct}%</p>
       {/* 진도 바 */}
       <div className={`h-1.5 rounded-full ${isSelected ? "bg-indigo-400" : "bg-gray-100"}`}>
