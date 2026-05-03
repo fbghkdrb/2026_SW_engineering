@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/words/**").authenticated()
                 .requestMatchers("/api/quiz/**").authenticated()
                 .requestMatchers("/api/character/**").authenticated()
+                .requestMatchers("/api/stats/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(
