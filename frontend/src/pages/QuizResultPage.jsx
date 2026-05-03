@@ -1,9 +1,16 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useCharacter } from "../context/CharacterContext";
 
 const QuizResultPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { fetchCharacter } = useCharacter();
+
+  useEffect(() => {
+    fetchCharacter();
+  }, [fetchCharacter]);
 
   // state 없이 직접 접근한 경우 퀴즈 페이지로 리다이렉트
   if (!state) {

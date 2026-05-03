@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {
     Optional<Character> findByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

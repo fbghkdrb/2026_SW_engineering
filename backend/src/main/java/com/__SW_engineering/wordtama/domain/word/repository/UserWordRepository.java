@@ -13,4 +13,6 @@ public interface UserWordRepository extends JpaRepository<UserWord, Long> {
     List<UserWord> findByUser_Id(Long userId);
 
     List<UserWord> findByUser_IdAndWord_IdIn(Long userId, List<Long> wordIds);
+
+    void deleteByUser_Id(Long userId);
 }
