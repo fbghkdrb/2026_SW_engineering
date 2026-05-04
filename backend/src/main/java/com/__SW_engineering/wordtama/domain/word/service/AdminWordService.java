@@ -1,8 +1,11 @@
 package com.__SW_engineering.wordtama.domain.word.service;
 
+import com.__SW_engineering.wordtama.domain.quiz.repository.QuizAnswerRepository;
+import com.__SW_engineering.wordtama.domain.word.dto.CsvUploadResponse;
 import com.__SW_engineering.wordtama.domain.word.dto.WordRequest;
 import com.__SW_engineering.wordtama.domain.word.dto.WordResponse;
 import com.__SW_engineering.wordtama.domain.word.entity.Word;
+import com.__SW_engineering.wordtama.domain.word.repository.UserWordRepository;
 import com.__SW_engineering.wordtama.domain.word.repository.WordRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
@@ -31,6 +34,8 @@ import java.util.List;
 public class AdminWordService {
 
     private final WordRepository wordRepository;
+    private final UserWordRepository userWordRepository;
+    private final QuizAnswerRepository quizAnswerRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -66,14 +71,18 @@ public class AdminWordService {
     public void deleteWord(Long wordId) {
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new CustomException(ErrorCode.WORD_NOT_FOUND));
+        quizAnswerRepository.deleteByWord_Id(wordId);
+        userWordRepository.deleteByWord_Id(wordId);
         wordRepository.delete(word);
     }
 
-    public int uploadCsv(MultipartFile file) throws IOException {
+    public CsvUploadResponse uploadCsv(MultipartFile file) throws IOException {
         int maxDay = wordRepository.findMaxDay().orElse(0);
 
         // CSV 유효 행만 먼저 수집
         List<String[]> rows = new ArrayList<>();
+        List<Long> skippedRows = new ArrayList<>();
+
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
              CSVParser parser = CSVFormat.DEFAULT.builder()
@@ -91,11 +100,13 @@ public class AdminWordService {
 
                     if (english.isEmpty() || korean.isEmpty()) {
                         log.warn("유효하지 않은 행 스킵 (빈 값): record #{}", record.getRecordNumber());
+                        skippedRows.add(record.getRecordNumber());
                         continue;
                     }
                     rows.add(new String[]{english, korean, example, exampleKorean});
                 } catch (Exception e) {
                     log.warn("유효하지 않은 행 스킵 (파싱 오류): record #{}", record.getRecordNumber());
+                    skippedRows.add(record.getRecordNumber());
                 }
             }
         }
@@ -126,9 +137,13 @@ public class AdminWordService {
         em.flush();
         em.clear();
 
-        log.info("CSV 업로드 완료: {}개 저장 (maxDay {} → {})",
-                count, maxDay, maxDay + (int) Math.ceil(rows.size() / 30.0));
+        log.info("CSV 업로드 완료: {}개 저장, {}개 스킵 (maxDay {} → {})",
+                count, skippedRows.size(), maxDay, maxDay + (int) Math.ceil(rows.size() / 30.0));
 
-        return count;
+        return CsvUploadResponse.builder()
+                .savedCount(count)
+                .skippedCount(skippedRows.size())
+                .skippedRows(skippedRows)
+                .build();
     }
 }

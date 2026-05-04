@@ -91,7 +91,8 @@ public class WordService {
         Optional<UserWord> existing = userWordRepository.findByUser_IdAndWord_Id(userId, wordId);
 
         if (existing.isEmpty()) {
-            User user = userRepository.getReferenceById(userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
             userWordRepository.save(UserWord.builder()
                     .user(user)
                     .word(word)
@@ -114,7 +115,8 @@ public class WordService {
         Optional<UserWord> existing = userWordRepository.findByUser_IdAndWord_Id(userId, wordId);
 
         if (existing.isEmpty()) {
-            User user = userRepository.getReferenceById(userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
             userWordRepository.save(UserWord.builder()
                     .user(user)
                     .word(word)

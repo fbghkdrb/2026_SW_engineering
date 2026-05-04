@@ -50,7 +50,8 @@ public class QuizService {
 
     @Transactional
     public StartQuizResponse startQuiz(Long userId, StartQuizRequest request) {
-        User user = userRepository.getReferenceById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Quiz quiz = quizRepository.save(Quiz.builder()
                 .user(user)
                 .day(request.getDay())

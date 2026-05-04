@@ -4,13 +4,16 @@ import com.__SW_engineering.wordtama.domain.quiz.dto.*;
 import com.__SW_engineering.wordtama.domain.quiz.service.QuizService;
 import com.__SW_engineering.wordtama.global.dto.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/quiz")
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class QuizController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<QuizQuestionResponse>>> getQuizQuestions(
-            @RequestParam Integer day,
+            @RequestParam @Min(value = 1, message = "day는 1 이상이어야 합니다.") Integer day,
             @RequestParam String type) {
         return ResponseEntity.ok(
                 ApiResponse.success(quizService.getQuizQuestions(day), "퀴즈 문제 조회 성공"));
