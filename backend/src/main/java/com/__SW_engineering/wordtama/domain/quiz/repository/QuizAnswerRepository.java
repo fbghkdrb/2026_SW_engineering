@@ -10,4 +10,6 @@ public interface QuizAnswerRepository extends JpaRepository<QuizAnswer, Long> {
     List<QuizAnswer> findByQuiz_Id(Long quizId);
 
     void deleteByQuiz_User_Id(Long userId);
+
+    void deleteByWord_Id(Long wordId);
 }

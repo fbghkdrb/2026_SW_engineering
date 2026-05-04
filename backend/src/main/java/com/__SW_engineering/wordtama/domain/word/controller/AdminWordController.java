@@ -1,5 +1,6 @@
 package com.__SW_engineering.wordtama.domain.word.controller;
 
+import com.__SW_engineering.wordtama.domain.word.dto.CsvUploadResponse;
 import com.__SW_engineering.wordtama.domain.word.dto.WordRequest;
 import com.__SW_engineering.wordtama.domain.word.dto.WordResponse;
 import com.__SW_engineering.wordtama.domain.word.service.AdminWordService;
@@ -49,16 +50,15 @@ public class AdminWordController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<String>> uploadCsv(
+    public ResponseEntity<ApiResponse<CsvUploadResponse>> uploadCsv(
             @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.fail("파일이 비어있습니다."));
         }
         try {
-            int count = adminWordService.uploadCsv(file);
-            return ResponseEntity.ok(ApiResponse.success(
-                    count + "개의 단어가 저장되었습니다.", "CSV 업로드 성공"));
+            CsvUploadResponse result = adminWordService.uploadCsv(file);
+            return ResponseEntity.ok(ApiResponse.success(result, "CSV 업로드 성공"));
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.fail("CSV 파싱 중 오류가 발생했습니다."));
