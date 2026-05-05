@@ -79,6 +79,14 @@ const MainPage = () => {
           >
             설정
           </button>
+          {user?.role === "ADMIN" && (
+            <button
+              onClick={() => navigate("/admin")}
+              className="hover:text-purple-600 transition-colors font-semibold"
+            >
+              관리자
+            </button>
+          )}
           <button
             onClick={handleLogout}
             className="hover:text-red-500 transition-colors"

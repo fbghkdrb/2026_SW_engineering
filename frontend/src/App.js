@@ -7,6 +7,8 @@ import SignupPage from "./pages/SignupPage";
 import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
 import AdminWordPage from "./pages/AdminWordPage";
+import AdminMainPage from "./pages/AdminMainPage";
+import AdminUserPage from "./pages/AdminUserPage";
 import WordListPage from "./pages/WordListPage";
 import QuizPage from "./pages/QuizPage";
 import QuizResultPage from "./pages/QuizResultPage";
@@ -44,10 +46,26 @@ const App = () => {
               }
             />
             <Route
+              path="/admin"
+              element={
+                <PrivateRoute adminOnly>
+                  <AdminMainPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/admin/words"
               element={
                 <PrivateRoute adminOnly>
                   <AdminWordPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <PrivateRoute adminOnly>
+                  <AdminUserPage />
                 </PrivateRoute>
               }
             />

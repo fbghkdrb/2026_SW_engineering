@@ -44,6 +44,10 @@ public class User {
         this.nickname = nickname;
     }
 
+    public void toggleRole() {
+        this.role = (this.role == Role.USER) ? Role.ADMIN : Role.USER;
+    }
+
     public enum Role {
         USER, ADMIN
     }
