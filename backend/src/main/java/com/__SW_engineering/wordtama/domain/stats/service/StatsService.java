@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StatsService {
 
-    private static final int TOTAL_DAYS = 50;
     private static final double COMPLETION_THRESHOLD = 0.8;
 
     private final QuizRepository quizRepository;
@@ -43,11 +42,12 @@ public class StatsService {
                 .collect(Collectors.toList());
 
         int completedDays = completedDayList.size();
+        int totalDays = quizRepository.findMaxDay();
 
         return ProgressResponseDto.builder()
                 .completedDays(completedDays)
-                .totalDays(TOTAL_DAYS)
-                .progressRate((double) completedDays / TOTAL_DAYS)
+                .totalDays(totalDays)
+                .progressRate(totalDays > 0 ? (double) completedDays / totalDays : 0.0)
                 .completedDayList(completedDayList)
                 .build();
     }

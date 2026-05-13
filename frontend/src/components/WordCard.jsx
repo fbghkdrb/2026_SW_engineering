@@ -13,6 +13,7 @@ const WordCard = ({ word, onStatusChange }) => {
   const [isFavorite, setIsFavorite] = useState(word.isFavorite);
   const [loadingKnown, setLoadingKnown] = useState(false);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSpeak = (e) => {
     e.stopPropagation();
@@ -26,11 +27,14 @@ const WordCard = ({ word, onStatusChange }) => {
     e.stopPropagation();
     if (loadingKnown || isKnown === target) return;
     setLoadingKnown(true);
+    setError(null);
     try {
       const res = await toggleKnown(word.id);
       const next = res.data.data.isKnown;
       setIsKnown(next);
       onStatusChange?.(word.id, { isKnown: next });
+    } catch {
+      setError("저장에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setLoadingKnown(false);
     }
@@ -40,11 +44,14 @@ const WordCard = ({ word, onStatusChange }) => {
     e.stopPropagation();
     if (loadingFavorite) return;
     setLoadingFavorite(true);
+    setError(null);
     try {
       const res = await toggleFavorite(word.id);
       const next = res.data.data.isFavorite;
       setIsFavorite(next);
       onStatusChange?.(word.id, { isFavorite: next });
+    } catch {
+      setError("즐겨찾기 저장에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setLoadingFavorite(false);
     }
@@ -102,6 +109,10 @@ const WordCard = ({ word, onStatusChange }) => {
           </div>
         </motion.div>
       </div>
+
+      {error && (
+        <p className="text-xs text-red-500 text-center">{error}</p>
+      )}
 
       {/* 알겠다 / 즐겨찾기 버튼 */}
       <div className="flex gap-2">
