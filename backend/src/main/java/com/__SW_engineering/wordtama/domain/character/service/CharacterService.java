@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -69,12 +69,9 @@ public class CharacterService {
     // 스케줄러용: 전체 사용자 vitality -15 배치 처리
     @Transactional
     public void decreaseAllVitality() {
-        List<Character> characters = characterRepository.findAll();
-        for (Character character : characters) {
-            character.updateVitality(-15);
-            updateStatus(character);
-        }
-        characterRepository.saveAll(characters);
+        LocalDateTime now = LocalDateTime.now();
+        characterRepository.bulkDecreaseVitality(now);
+        characterRepository.bulkUpdateAllStatuses(now);
     }
 
     // vitality 기준으로 status 자동 갱신 (퀴즈·스케줄러 공통 사용)
