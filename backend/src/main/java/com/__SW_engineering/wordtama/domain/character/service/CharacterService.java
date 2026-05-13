@@ -74,6 +74,15 @@ public class CharacterService {
         characterRepository.bulkUpdateAllStatuses(now);
     }
 
+    // 오답 퀴즈 완료 시 vitality 직접 추가
+    @Transactional
+    public void addVitality(Long userId, int amount) {
+        Character character = characterRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
+        character.updateVitality(amount);
+        updateStatus(character);
+    }
+
     // vitality 기준으로 status 자동 갱신 (퀴즈·스케줄러 공통 사용)
     private void updateStatus(Character character) {
         int vitality = character.getVitality();

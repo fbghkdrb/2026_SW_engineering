@@ -12,6 +12,8 @@ import AdminUserPage from "./pages/AdminUserPage";
 import WordListPage from "./pages/WordListPage";
 import QuizPage from "./pages/QuizPage";
 import QuizResultPage from "./pages/QuizResultPage";
+import WrongNotePage from "./pages/WrongNotePage";
+import WrongNoteQuizPage from "./pages/WrongNoteQuizPage";
 
 const App = () => {
   return (
@@ -82,6 +84,22 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <QuizResultPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/wrong-notes"
+              element={
+                <PrivateRoute>
+                  <WrongNotePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/wrong-notes/quiz"
+              element={
+                <PrivateRoute>
+                  <WrongNoteQuizPage />
                 </PrivateRoute>
               }
             />

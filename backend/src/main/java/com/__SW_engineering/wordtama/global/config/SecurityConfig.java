@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/quiz/**").authenticated()
                 .requestMatchers("/api/character/**").authenticated()
                 .requestMatchers("/api/stats/**").authenticated()
+                .requestMatchers("/api/wrong-notes/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(

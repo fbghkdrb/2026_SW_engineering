@@ -1,6 +1,7 @@
 package com.__SW_engineering.wordtama.domain.quiz.service;
 
 import com.__SW_engineering.wordtama.domain.character.service.CharacterService;
+import com.__SW_engineering.wordtama.domain.wrongnote.service.WrongNoteService;
 import com.__SW_engineering.wordtama.domain.quiz.dto.*;
 import com.__SW_engineering.wordtama.domain.quiz.entity.Quiz;
 import com.__SW_engineering.wordtama.domain.quiz.entity.QuizAnswer;
@@ -32,6 +33,7 @@ public class QuizService {
     private final WordRepository wordRepository;
     private final UserRepository userRepository;
     private final CharacterService characterService;
+    private final WrongNoteService wrongNoteService;
 
     @Transactional(readOnly = true)
     public List<QuizQuestionResponse> getQuizQuestions(Integer day) {
@@ -113,6 +115,8 @@ public class QuizService {
                         .korean(a.getWord().getKorean())
                         .build())
                 .collect(Collectors.toList());
+
+        wrongNoteService.saveWrongNotes(userId, quizId);
 
         return QuizResultResponse.builder()
                 .totalCount(totalCount)
