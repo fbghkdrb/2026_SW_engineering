@@ -111,6 +111,13 @@ const QuizResultPage = () => {
             단어장으로
           </motion.button>
         </div>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={() => navigate("/wrong-notes")}
+          className="w-full bg-red-50 text-red-500 font-semibold py-3.5 rounded-2xl border border-red-200 hover:bg-red-100 transition-colors"
+        >
+          오답노트 보기 📝
+        </motion.button>
       </main>
     </div>
   );

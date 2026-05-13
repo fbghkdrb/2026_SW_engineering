@@ -20,7 +20,8 @@ public enum ErrorCode {
     QUIZ_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 퀴즈입니다."),
     CHARACTER_NOT_FOUND(HttpStatus.NOT_FOUND, "캐릭터를 찾을 수 없습니다."),
     CHARACTER_NOT_FAINT(HttpStatus.BAD_REQUEST, "기절 상태가 아닌 캐릭터는 부활시킬 수 없습니다."),
-    INSUFFICIENT_COIN(HttpStatus.BAD_REQUEST, "코인이 부족합니다.");
+    INSUFFICIENT_COIN(HttpStatus.BAD_REQUEST, "코인이 부족합니다."),
+    INSUFFICIENT_WRONG_NOTES(HttpStatus.BAD_REQUEST, "오답 단어가 4개 미만이어서 퀴즈를 시작할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
