@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { getWrongNotes } from "../api/wrongNoteApi";
+import { getWrongNotes, deleteWrongNote } from "../api/wrongNoteApi";
 
 const ttsSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
@@ -71,6 +71,8 @@ const WrongNotePage = () => {
   const [wrongNotes, setWrongNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     const fetchWrongNotes = async () => {
@@ -85,6 +87,20 @@ const WrongNotePage = () => {
     };
     fetchWrongNotes();
   }, []);
+
+  const handleDelete = async (wordId) => {
+    if (deletingId) return;
+    setDeletingId(wordId);
+    try {
+      await deleteWrongNote(wordId);
+      setWrongNotes((prev) => prev.filter((wn) => wn.wordId !== wordId));
+    } catch {
+      setDeleteError("삭제에 실패했습니다. 다시 시도해주세요.");
+      setTimeout(() => setDeleteError(""), 3000);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col">
@@ -103,6 +119,20 @@ const WrongNotePage = () => {
           </span>
         )}
       </header>
+
+      {/* 삭제 실패 토스트 */}
+      {deleteError && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          className="fixed top-16 left-0 right-0 flex justify-center z-50 px-4"
+        >
+          <div className="bg-red-500 text-white text-sm font-medium px-5 py-2.5 rounded-2xl shadow-lg">
+            {deleteError}
+          </div>
+        </motion.div>
+      )}
 
       {/* 본문 */}
       <main className="flex-1 overflow-y-auto px-4 py-5 pb-28 max-w-lg mx-auto w-full">
@@ -144,9 +174,19 @@ const WrongNotePage = () => {
                     <span className="text-xs font-bold text-white bg-red-400 rounded-full px-3 py-1">
                       {wn.wrongCount}회 틀림
                     </span>
-                    <span className="text-xs text-gray-400">
-                      마지막: {new Date(wn.lastWrongAt).toLocaleDateString("ko-KR")}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">
+                        마지막: {new Date(wn.lastWrongAt).toLocaleDateString("ko-KR")}
+                      </span>
+                      <button
+                        onClick={() => handleDelete(wn.wordId)}
+                        disabled={deletingId === wn.wordId}
+                        className="text-gray-300 hover:text-red-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-base leading-none"
+                        title="오답노트에서 삭제"
+                      >
+                        {deletingId === wn.wordId ? "…" : "✕"}
+                      </button>
+                    </div>
                   </div>
                   {/* 플립 카드 (알겠다/즐겨찾기 버튼 없음 — 복습 전용) */}
                   <FlipCard wn={wn} />
@@ -164,11 +204,11 @@ const WrongNotePage = () => {
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/wrong-notes/quiz")}
-              disabled={wrongNotes.length < 4}
+              disabled={wrongNotes.length < 20}
               className="w-full bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl transition-colors shadow-md"
             >
-              {wrongNotes.length < 4
-                ? `오답 퀴즈 (단어 ${wrongNotes.length}/4개 필요)`
+              {wrongNotes.length < 20
+                ? "오답 단어가 20개 이상이어야 퀴즈를 시작할 수 있습니다"
                 : "오답 퀴즈 시작 ✏️"}
             </motion.button>
           </div>

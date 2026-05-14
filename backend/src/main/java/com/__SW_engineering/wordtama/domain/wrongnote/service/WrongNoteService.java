@@ -14,6 +14,8 @@ import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteQuizResultRes
 import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteQuizSubmitRequest;
 import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteResponse;
 import com.__SW_engineering.wordtama.domain.wrongnote.entity.WrongNote;
+import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPass;
+import com.__SW_engineering.wordtama.domain.wrongnote.repository.DailyQuizPassRepository;
 import com.__SW_engineering.wordtama.domain.wrongnote.repository.WrongNoteRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,8 +36,10 @@ public class WrongNoteService {
     private static final int WRONG_NOTE_QUIZ_SIZE = 20;
     private static final int MIN_WRONG_NOTES = 4;
     private static final int VITALITY_GAIN = 20;
+    private static final int WRONG_NOTE_QUIZ_ENTRY_THRESHOLD = 20;
 
     private final WrongNoteRepository wrongNoteRepository;
+    private final DailyQuizPassRepository dailyQuizPassRepository;
     private final QuizAnswerRepository quizAnswerRepository;
     private final QuizRepository quizRepository;
     private final WordRepository wordRepository;
@@ -151,11 +156,68 @@ public class WrongNoteService {
             vitalityGained = VITALITY_GAIN;
         }
 
+        // pass 기록을 동일 트랜잭션 내에서 저장 (원자성 보장)
+        dailyQuizPassRepository.save(DailyQuizPass.builder()
+                .user(user)
+                .passDate(LocalDate.now())
+                .quiz(quiz)
+                .build());
+
         return WrongNoteQuizResultResponse.builder()
+                .quizId(quiz.getId())
                 .correctCount(correctCount)
                 .totalCount(totalCount)
                 .vitalityGained(vitalityGained)
                 .build();
+    }
+
+    @Transactional
+    public void deleteWrongNote(Long userId, Long wordId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new CustomException(ErrorCode.WORD_NOT_FOUND));
+
+        WrongNote wrongNote = wrongNoteRepository.findByUserAndWord(user, word)
+                .orElseThrow(() -> new CustomException(ErrorCode.WRONG_NOTE_NOT_FOUND));
+
+        wrongNoteRepository.delete(wrongNote);
+    }
+
+    // 오답 퀴즈 진입 조건 체크: 오답 단어 수 > 20 AND 오늘 미통과
+    @Transactional(readOnly = true)
+    public void checkQuizEntryCondition(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        int wrongNoteCount = wrongNoteRepository.findByUserOrderByWrongCountDesc(user).size();
+        if (wrongNoteCount < WRONG_NOTE_QUIZ_ENTRY_THRESHOLD) {
+            throw new CustomException(ErrorCode.WRONG_NOTE_COUNT_INSUFFICIENT);
+        }
+
+        boolean alreadyPassed = dailyQuizPassRepository
+                .findByUserIdAndPassDate(userId, LocalDate.now())
+                .isPresent();
+        if (alreadyPassed) {
+            throw new CustomException(ErrorCode.DAILY_QUIZ_ALREADY_PASSED);
+        }
+    }
+
+    // 오답 퀴즈 통과 기록 저장
+    @Transactional
+    public void recordDailyQuizPass(Long userId, Long quizId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
+
+        dailyQuizPassRepository.save(DailyQuizPass.builder()
+                .user(user)
+                .passDate(LocalDate.now())
+                .quiz(quiz)
+                .build());
     }
 
     private WrongNoteQuizQuestionResponse buildQuizQuestion(WrongNote wn, List<String> wrongWordPool) {
