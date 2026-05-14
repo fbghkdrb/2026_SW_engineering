@@ -4,6 +4,8 @@ import com.__SW_engineering.wordtama.global.dto.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +43,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(ApiResponse.fail(message));
+    }
+
+    // daily_quiz_pass(user_id, pass_date) 유니크 제약 위반 시 DAILY_QUIZ_ALREADY_PASSED로 변환
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        String message = e.getMessage() != null ? e.getMessage() : "";
+        if (message.contains("daily_quiz_pass")) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.fail(ErrorCode.DAILY_QUIZ_ALREADY_PASSED.getMessage()));
+        }
+        log.error("DataIntegrityViolationException: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.fail("데이터 중복 오류가 발생했습니다."));
     }
 
     @ExceptionHandler(Exception.class)

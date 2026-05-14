@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class WrongNoteQuizResultResponse {
 
+    private Long quizId;
     private int correctCount;
     private int totalCount;
     private int vitalityGained;

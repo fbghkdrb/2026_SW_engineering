@@ -28,9 +28,18 @@ public class WrongNoteController {
                 ApiResponse.success(wrongNoteService.getWrongNotes(userId), "오답 목록 조회 성공"));
     }
 
+    @DeleteMapping("/{wordId}")
+    public ResponseEntity<ApiResponse<Void>> deleteWrongNote(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long wordId) {
+        wrongNoteService.deleteWrongNote(userId, wordId);
+        return ResponseEntity.ok(ApiResponse.success(null, "오답노트 삭제 성공"));
+    }
+
     @GetMapping("/quiz")
     public ResponseEntity<ApiResponse<List<WrongNoteQuizQuestionResponse>>> getWrongNoteQuiz(
             @AuthenticationPrincipal Long userId) {
+        wrongNoteService.checkQuizEntryCondition(userId);
         return ResponseEntity.ok(
                 ApiResponse.success(wrongNoteService.getWrongNoteQuiz(userId), "오답 퀴즈 조회 성공"));
     }

@@ -15,6 +15,8 @@ const WrongNoteQuizPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [entryBlocked, setEntryBlocked] = useState(false);
+  const [entryMessage, setEntryMessage] = useState("");
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -23,7 +25,12 @@ const WrongNoteQuizPage = () => {
         if (data.success) setQuestions(data.data);
       } catch (err) {
         const msg = err.response?.data?.message ?? "퀴즈를 불러오는데 실패했습니다.";
-        setFetchError(msg);
+        if (err.response?.status === 400) {
+          setEntryBlocked(true);
+          setEntryMessage(msg);
+        } else {
+          setFetchError(msg);
+        }
       } finally {
         setLoading(false);
       }
@@ -142,6 +149,30 @@ const WrongNoteQuizPage = () => {
             오답노트로 돌아가기
           </motion.button>
         </motion.div>
+      </div>
+    );
+  }
+
+  // ── 진입 조건 미충족 ───────────────────────────────────────────
+  if (entryBlocked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center px-6 gap-5">
+        <div className="bg-white rounded-3xl shadow-lg p-8 w-full max-w-sm text-center space-y-5">
+          <p className="text-4xl">🚫</p>
+          <p className="text-gray-700 font-semibold text-sm leading-relaxed">{entryMessage}</p>
+          <motion.button
+            disabled
+            className="w-full bg-gray-200 text-gray-400 font-bold py-3.5 rounded-2xl cursor-not-allowed"
+          >
+            퀴즈 시작하기
+          </motion.button>
+          <button
+            onClick={() => navigate("/wrong-notes")}
+            className="text-indigo-500 hover:underline text-sm"
+          >
+            오답노트로 돌아가기
+          </button>
+        </div>
       </div>
     );
   }
