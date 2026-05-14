@@ -79,6 +79,30 @@ const QuizPage = () => {
     }, 1000);
   }, []);
 
+  // 공통 제출 로직 — submittingRef로 이중 제출 완전 차단
+  // useEffect보다 반드시 위에 선언해야 TDZ 오류 방지
+  // selectedChoice: 객관식에서 사용자가 선택한 보기 (피드백 UI용)
+  const submitCurrentAnswer = useCallback(async (answer, selectedChoice = null) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    stopTimer();
+    setAnswerLoading(true);
+    setAnswerError(null);
+    try {
+      const res = await submitAnswerApi(quizId, questions[currentIndex].wordId, answer);
+      const feedbackData = selectedChoice
+        ? { ...res.data.data, selectedChoice }
+        : res.data.data;
+      setFeedback(feedbackData);
+    } catch {
+      setAnswerError("답 제출에 실패했습니다. 다시 시도해주세요.");
+      if (timedMode) startTimer();
+    } finally {
+      setAnswerLoading(false);
+      submittingRef.current = false;
+    }
+  }, [quizId, questions, currentIndex, timedMode, stopTimer, startTimer]);
+
   // 언마운트 시 타이머 정리
   useEffect(() => {
     return () => clearInterval(timerRef.current);
@@ -182,29 +206,6 @@ const QuizPage = () => {
       setPhase("type-select");
     }
   };
-
-  // 공통 제출 로직 — submittingRef로 이중 제출 완전 차단
-  // selectedChoice: 객관식에서 사용자가 선택한 보기 (피드백 UI용)
-  const submitCurrentAnswer = useCallback(async (answer, selectedChoice = null) => {
-    if (submittingRef.current) return;
-    submittingRef.current = true;
-    stopTimer();
-    setAnswerLoading(true);
-    setAnswerError(null);
-    try {
-      const res = await submitAnswerApi(quizId, questions[currentIndex].wordId, answer);
-      const feedbackData = selectedChoice
-        ? { ...res.data.data, selectedChoice }
-        : res.data.data;
-      setFeedback(feedbackData);
-    } catch {
-      setAnswerError("답 제출에 실패했습니다. 다시 시도해주세요.");
-      if (timedMode) startTimer();
-    } finally {
-      setAnswerLoading(false);
-      submittingRef.current = false;
-    }
-  }, [quizId, questions, currentIndex, timedMode, stopTimer, startTimer]);
 
   // SHORT / BLANK: 텍스트 입력 제출
   const handleSubmitAnswer = () => {

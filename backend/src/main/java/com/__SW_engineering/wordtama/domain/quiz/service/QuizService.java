@@ -218,10 +218,13 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<BlankQuizQuestionResponse> getBlankQuizQuestions(Integer day) {
-        List<Word> dayWords = wordRepository.findByDayOrderByIdAsc(day);
+        // 셔플 후 example 있는 단어만 최대 10개 출제
+        List<Word> dayWords = new ArrayList<>(wordRepository.findByDayOrderByIdAsc(day));
+        Collections.shuffle(dayWords);
 
         return dayWords.stream()
                 .filter(w -> w.getExample() != null && !w.getExample().isBlank())
+                .limit(QUIZ_SIZE)
                 .map(w -> {
                     // 대소문자 무시하여 영어 단어를 ___ 로 치환
                     String blankSentence = w.getExample()
