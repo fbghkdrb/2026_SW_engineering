@@ -24,7 +24,9 @@ public enum ErrorCode {
     INSUFFICIENT_WRONG_NOTES(HttpStatus.BAD_REQUEST, "오답 단어가 4개 미만이어서 퀴즈를 시작할 수 없습니다."),
     WRONG_NOTE_COUNT_INSUFFICIENT(HttpStatus.BAD_REQUEST, "오답 단어가 20개 이상이어야 퀴즈를 시작할 수 있습니다."),
     DAILY_QUIZ_ALREADY_PASSED(HttpStatus.BAD_REQUEST, "오답 퀴즈는 하루에 1번만 통과할 수 있습니다."),
-    WRONG_NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "오답노트에 존재하지 않는 단어입니다.");
+    WRONG_NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "오답노트에 존재하지 않는 단어입니다."),
+    INVALID_DIRECTION(HttpStatus.BAD_REQUEST, "direction 파라미터는 필수입니다 (EN_TO_KO / KO_TO_EN)"),
+    INSUFFICIENT_WORDS_FOR_QUIZ(HttpStatus.BAD_REQUEST, "객관식 퀴즈를 위한 단어가 부족합니다. 최소 4개가 필요합니다.");
 
     private final HttpStatus status;
     private final String message;

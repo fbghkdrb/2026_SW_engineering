@@ -19,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -124,5 +127,111 @@ public class QuizService {
                 .coinEarned(0)
                 .wrongWords(wrongWords)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MultipleQuizQuestionResponse> getMultipleQuizQuestions(Integer day, String direction) {
+        if (direction == null || direction.isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_DIRECTION);
+        }
+
+        boolean isEnToKo = "EN_TO_KO".equalsIgnoreCase(direction);
+        if (!isEnToKo && !"KO_TO_EN".equalsIgnoreCase(direction)) {
+            throw new CustomException(ErrorCode.INVALID_DIRECTION);
+        }
+
+        // 해당 day 단어를 섞은 뒤 최대 10개 출제
+        List<Word> dayWords = new ArrayList<>(wordRepository.findByDayOrderByIdAsc(day));
+        Collections.shuffle(dayWords);
+        List<Word> questionWords = dayWords.stream().limit(QUIZ_SIZE).collect(Collectors.toList());
+
+        // 다른 day 단어 (보기 보충용 — 같은 day 단어가 4개 미만일 때)
+        List<Word> otherDayWords = new ArrayList<>(wordRepository.findAllByOrderByDayAscIdAsc().stream()
+                .filter(w -> !w.getDay().equals(day))
+                .collect(Collectors.toList()));
+
+        List<MultipleQuizQuestionResponse> result = new ArrayList<>();
+        for (Word questionWord : questionWords) {
+            // 이미 선택된 보기 값을 추적하는 Set (정답 값 포함하여 초기화)
+            Set<String> usedValues = new HashSet<>();
+            usedValues.add(isEnToKo ? questionWord.getKorean() : questionWord.getEnglish());
+
+            // 같은 day에서 정답 ID 및 보기 값 중복 제외한 오답 후보
+            List<Word> sameDayCandidates = new ArrayList<>(dayWords.stream()
+                    .filter(w -> !w.getId().equals(questionWord.getId()))
+                    .filter(w -> isEnToKo
+                            ? !usedValues.contains(w.getKorean())
+                            : !usedValues.contains(w.getEnglish()))
+                    .collect(Collectors.toList()));
+            Collections.shuffle(sameDayCandidates);
+
+            // 오답 후보 간 값 중복도 제거하며 최대 3개 선택
+            List<Word> wrongWords = new ArrayList<>();
+            for (Word candidate : sameDayCandidates) {
+                if (wrongWords.size() >= 3) break;
+                String val = isEnToKo ? candidate.getKorean() : candidate.getEnglish();
+                if (usedValues.add(val)) {
+                    wrongWords.add(candidate);
+                }
+            }
+
+            // 같은 day 단어가 부족하면 다른 day에서 보충 (값 중복 제외)
+            if (wrongWords.size() < 3) {
+                List<Word> shuffledOther = new ArrayList<>(otherDayWords);
+                Collections.shuffle(shuffledOther);
+                for (Word candidate : shuffledOther) {
+                    if (wrongWords.size() >= 3) break;
+                    String val = isEnToKo ? candidate.getKorean() : candidate.getEnglish();
+                    if (usedValues.add(val)) {
+                        wrongWords.add(candidate);
+                    }
+                }
+            }
+
+            // 정답 1 + 오답 3 = 4지선다 구성 후 셔플
+            List<String> choices = new ArrayList<>();
+            if (isEnToKo) {
+                choices.add(questionWord.getKorean());
+                wrongWords.forEach(w -> choices.add(w.getKorean()));
+            } else {
+                choices.add(questionWord.getEnglish());
+                wrongWords.forEach(w -> choices.add(w.getEnglish()));
+            }
+
+            // DB 전체 단어 부족으로 4지선다 구성 불가
+            if (choices.size() < 4) {
+                throw new CustomException(ErrorCode.INSUFFICIENT_WORDS_FOR_QUIZ);
+            }
+
+            Collections.shuffle(choices);
+
+            result.add(MultipleQuizQuestionResponse.builder()
+                    .wordId(questionWord.getId())
+                    .question(isEnToKo ? questionWord.getEnglish() : questionWord.getKorean())
+                    .choices(choices)
+                    .correctAnswer(isEnToKo ? questionWord.getKorean() : questionWord.getEnglish())
+                    .build());
+        }
+
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<BlankQuizQuestionResponse> getBlankQuizQuestions(Integer day) {
+        List<Word> dayWords = wordRepository.findByDayOrderByIdAsc(day);
+
+        return dayWords.stream()
+                .filter(w -> w.getExample() != null && !w.getExample().isBlank())
+                .map(w -> {
+                    // 대소문자 무시하여 영어 단어를 ___ 로 치환
+                    String blankSentence = w.getExample()
+                            .replaceAll("(?i)" + Pattern.quote(w.getEnglish()), "___");
+                    return BlankQuizQuestionResponse.builder()
+                            .wordId(w.getId())
+                            .blankSentence(blankSentence)
+                            .korean(w.getKorean())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }
