@@ -9,6 +9,7 @@ import {
   startQuiz,
   submitAnswer as submitAnswerApi,
   submitQuiz as submitQuizApi,
+  fetchTodayPassStatus,
 } from "../api/quizApi";
 import { useAuth } from "../context/AuthContext";
 
@@ -57,6 +58,8 @@ const QuizPage = () => {
   const quizActiveRef = useRef(false);
   const submittingRef = useRef(false); // 이중 제출 방지 플래그
   const [showExitModal, setShowExitModal] = useState(false);
+
+  const [isPassedToday, setIsPassedToday] = useState(false);
 
   const isMultiple = quizType === "MULTIPLE_EN_KO" || quizType === "MULTIPLE_KO_EN";
 
@@ -147,6 +150,17 @@ const QuizPage = () => {
   // Day 목록 최초 로드
   useEffect(() => {
     loadDays();
+  }, []);
+
+  // 오늘 퀴즈 통과 여부 조회 — 실패해도 퀴즈 진행 차단 금지
+  useEffect(() => {
+    fetchTodayPassStatus()
+      .then((res) => {
+        if (res.data.success) {
+          setIsPassedToday(res.data.data.isPassedToday);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // 새 문제로 이동 시 입력창 자동 포커스 (SHORT, BLANK)
@@ -275,6 +289,12 @@ const QuizPage = () => {
         </header>
 
         <main className="max-w-2xl mx-auto space-y-5">
+          {isPassedToday && (
+            <div className="bg-green-100 text-green-700 text-sm font-semibold rounded-xl px-4 py-3 text-center">
+              오늘 퀴즈 통과 완료 ✅
+            </div>
+          )}
+
           {startError && (
             <div className="bg-red-50 text-red-500 text-sm rounded-xl px-4 py-3">
               {startError}

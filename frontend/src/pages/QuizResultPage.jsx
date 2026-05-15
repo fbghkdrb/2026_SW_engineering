@@ -17,7 +17,7 @@ const QuizResultPage = () => {
     return <Navigate to="/quiz" replace />;
   }
 
-  const { totalCount, correctCount, wrongWords } = state;
+  const { totalCount, correctCount, wrongWords, isFirstPassToday } = state;
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   const emoji = score === 100 ? "🎉" : score >= 70 ? "👍" : "💪";
@@ -67,6 +67,17 @@ const QuizResultPage = () => {
             />
           </div>
           <p className="text-sm text-gray-400">{score}점</p>
+
+          {isFirstPassToday && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+              className="mt-5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-semibold rounded-xl px-4 py-3"
+            >
+              오늘 첫 퀴즈 통과! 🎉 활력도 +20
+            </motion.div>
+          )}
         </motion.div>
 
         {/* 오답 목록 */}

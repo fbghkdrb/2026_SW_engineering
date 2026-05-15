@@ -63,4 +63,11 @@ public class QuizController {
         return ResponseEntity.ok(
                 ApiResponse.success(quizService.submitQuiz(userId, quizId), "퀴즈 최종 제출 성공"));
     }
+
+    @GetMapping("/today-pass")
+    public ResponseEntity<ApiResponse<TodayPassResponse>> getTodayPassStatus(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(quizService.getTodayPassStatus(userId), "성공"));
+    }
 }

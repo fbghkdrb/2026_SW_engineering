@@ -1,6 +1,8 @@
 package com.__SW_engineering.wordtama.domain.quiz.service;
 
 import com.__SW_engineering.wordtama.domain.character.service.CharacterService;
+import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPass;
+import com.__SW_engineering.wordtama.domain.wrongnote.repository.DailyQuizPassRepository;
 import com.__SW_engineering.wordtama.domain.wrongnote.service.WrongNoteService;
 import com.__SW_engineering.wordtama.domain.quiz.dto.*;
 import com.__SW_engineering.wordtama.domain.quiz.entity.Quiz;
@@ -14,9 +16,11 @@ import com.__SW_engineering.wordtama.domain.word.repository.WordRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,6 +41,10 @@ public class QuizService {
     private final UserRepository userRepository;
     private final CharacterService characterService;
     private final WrongNoteService wrongNoteService;
+    private final DailyQuizPassRepository dailyQuizPassRepository;
+
+    // checkAndRecordDailyPass 반환용 내부 레코드
+    private record PassResult(boolean isPassed, boolean isFirstPassToday) {}
 
     @Transactional(readOnly = true)
     public List<QuizQuestionResponse> getQuizQuestions(Integer day) {
@@ -108,7 +116,12 @@ public class QuizService {
         int correctCount = (int) answers.stream().filter(QuizAnswer::isCorrect).count();
 
         quiz.complete(totalCount, correctCount);
-        characterService.applyQuizResult(userId, correctCount, totalCount);
+
+        // PBI-08: 하루 1회 통과 체크 및 vitality 보상
+        PassResult passResult = checkAndRecordDailyPass(userId, quizId, correctCount, totalCount);
+        if (passResult.isFirstPassToday()) {
+            characterService.addVitality(userId, 20);
+        }
 
         List<WrongWordDto> wrongWords = answers.stream()
                 .filter(a -> !a.isCorrect())
@@ -126,6 +139,8 @@ public class QuizService {
                 .correctCount(correctCount)
                 .coinEarned(0)
                 .wrongWords(wrongWords)
+                .isPassed(passResult.isPassed())
+                .isFirstPassToday(passResult.isFirstPassToday())
                 .build();
     }
 
@@ -236,5 +251,54 @@ public class QuizService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    // 통과 여부 판정 및 하루 1회 DailyQuizPass 저장
+    private PassResult checkAndRecordDailyPass(Long userId, Long quizId, int correctCount, int totalCount) {
+        if (totalCount <= 0 || (correctCount * 100 / totalCount) < 80) {
+            return new PassResult(false, false);
+        }
+
+        boolean alreadyPassed = dailyQuizPassRepository
+                .findByUserIdAndPassDate(userId, LocalDate.now())
+                .isPresent();
+
+        if (alreadyPassed) {
+            return new PassResult(true, false);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
+
+        try {
+            dailyQuizPassRepository.save(
+                    DailyQuizPass.builder()
+                            .user(user)
+                            .passDate(LocalDate.now())
+                            .quiz(quiz)
+                            .build()
+            );
+        } catch (DataIntegrityViolationException e) {
+            // 동시 요청으로 unique 제약 위반 시 — 이미 오늘 통과 기록 존재
+            return new PassResult(true, false);
+        }
+
+        return new PassResult(true, true);
+    }
+
+    @Transactional(readOnly = true)
+    public TodayPassResponse getTodayPassStatus(Long userId) {
+        return dailyQuizPassRepository
+                .findByUserIdAndPassDate(userId, LocalDate.now())
+                .map(pass -> TodayPassResponse.builder()
+                        .isPassedToday(true)
+                        .passedAt(pass.getCreatedAt())
+                        .build())
+                .orElse(TodayPassResponse.builder()
+                        .isPassedToday(false)
+                        .passedAt(null)
+                        .build());
     }
 }
