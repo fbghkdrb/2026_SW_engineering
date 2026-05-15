@@ -17,3 +17,6 @@ export const submitAnswer = (quizId, wordId, userAnswer) =>
 
 export const submitQuiz = (quizId) =>
   axiosInstance.post(`/api/quiz/${quizId}/submit`);
+
+export const fetchTodayPassStatus = () =>
+  axiosInstance.get("/api/quiz/today-pass");
