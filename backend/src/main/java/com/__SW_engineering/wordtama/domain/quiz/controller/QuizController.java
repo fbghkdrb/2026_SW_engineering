@@ -22,11 +22,21 @@ public class QuizController {
     private final QuizService quizService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<QuizQuestionResponse>>> getQuizQuestions(
+    public ResponseEntity<ApiResponse<Object>> getQuizQuestions(
             @RequestParam @Min(value = 1, message = "day는 1 이상이어야 합니다.") Integer day,
-            @RequestParam String type) {
-        return ResponseEntity.ok(
-                ApiResponse.success(quizService.getQuizQuestions(day), "퀴즈 문제 조회 성공"));
+            @RequestParam String type,
+            @RequestParam(required = false) String direction) {
+
+        Object data;
+        if ("MULTIPLE".equalsIgnoreCase(type)) {
+            data = quizService.getMultipleQuizQuestions(day, direction);
+        } else if ("BLANK".equalsIgnoreCase(type)) {
+            data = quizService.getBlankQuizQuestions(day);
+        } else {
+            data = quizService.getQuizQuestions(day);
+        }
+
+        return ResponseEntity.ok(ApiResponse.success(data, "퀴즈 문제 조회 성공"));
     }
 
     @PostMapping("/start")
