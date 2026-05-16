@@ -14,6 +14,7 @@ import QuizPage from "./pages/QuizPage";
 import QuizResultPage from "./pages/QuizResultPage";
 import WrongNotePage from "./pages/WrongNotePage";
 import WrongNoteQuizPage from "./pages/WrongNoteQuizPage";
+import ShopPage from "./pages/ShopPage"; // [PBI-11 추가]
 
 const App = () => {
   return (
@@ -100,6 +101,15 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <WrongNoteQuizPage />
+                </PrivateRoute>
+              }
+            />
+            {/* [PBI-11 추가] */}
+            <Route
+              path="/shop"
+              element={
+                <PrivateRoute>
+                  <ShopPage />
                 </PrivateRoute>
               }
             />

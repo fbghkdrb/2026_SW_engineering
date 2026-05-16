@@ -73,4 +73,20 @@ public class Character {
         this.status = newStatus;
         this.updatedAt = LocalDateTime.now();
     }
+
+    // [PBI-11 추가] 코인 증가
+    public void addCoin(int amount) {
+        this.coin += amount;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // [PBI-11 추가] 코인 차감 (잔액 부족 시 예외)
+    public void deductCoin(int amount) {
+        if (this.coin < amount) {
+            throw new com.__SW_engineering.wordtama.global.exception.CustomException(
+                    com.__SW_engineering.wordtama.global.exception.ErrorCode.INSUFFICIENT_COIN);
+        }
+        this.coin -= amount;
+        this.updatedAt = LocalDateTime.now();
+    }
 }
