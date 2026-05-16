@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/wrong-notes/**").authenticated()
                 .requestMatchers("/api/shop/**").authenticated()   // [PBI-11 추가]
                 .requestMatchers("/api/coins/**").authenticated()  // [PBI-11 추가]
+                .requestMatchers("/api/attendance/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(

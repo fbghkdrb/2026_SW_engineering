@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCharacter } from "../context/CharacterContext";
 import { reviveCharacter } from "../api/characterApi";
 import CharacterDisplay from "../components/CharacterDisplay";
+import AttendanceWidget from "../components/AttendanceWidget";
 
 const REVIVE_COST = 50;
 
@@ -27,7 +28,6 @@ const NAV_ITEMS = [
   { label: "퀴즈", path: "/quiz", icon: "✏️" },
   { label: "오답노트", path: "/wrong-notes", icon: "📝" },
   { label: "상점", path: "/shop", icon: "🛒" },
-  { label: "출석", path: "/attendance", icon: "📅" },
   { label: "통계", path: "/stats", icon: "📊" },
 ];
 
@@ -133,6 +133,9 @@ const MainPage = () => {
           </div>
         </div>
 
+        {/* 출석 위젯 */}
+        <AttendanceWidget />
+
         {/* FAINT 상태 부활 버튼 */}
         {status === "FAINT" && (
           <motion.div
@@ -156,7 +159,7 @@ const MainPage = () => {
 
       {/* 하단 내비게이션 */}
       <nav className="bg-white border-t border-gray-100 px-4 py-3 shadow-inner">
-        <div className="grid grid-cols-6 gap-1 max-w-lg mx-auto">
+        <div className="grid grid-cols-5 gap-1 max-w-lg mx-auto">
           {NAV_ITEMS.map(({ label, path, icon }) => (
             <button
               key={label}
