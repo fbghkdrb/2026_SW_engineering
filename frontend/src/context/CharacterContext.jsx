@@ -7,6 +7,7 @@ const CharacterContext = createContext(null);
 export const CharacterProvider = ({ children }) => {
   const { user } = useAuth();
   const [character, setCharacter] = useState(null);
+  const [streak, setStreak] = useState(0);
 
   const fetchCharacter = useCallback(async () => {
     try {
@@ -25,6 +26,7 @@ export const CharacterProvider = ({ children }) => {
       fetchCharacter();
     } else {
       setCharacter(null);
+      setStreak(0);
     }
   }, [user, fetchCharacter]);
 
@@ -38,7 +40,7 @@ export const CharacterProvider = ({ children }) => {
   }, []);
 
   return (
-    <CharacterContext.Provider value={{ character, fetchCharacter, updateCharacter, updateCoin }}>
+    <CharacterContext.Provider value={{ character, fetchCharacter, updateCharacter, updateCoin, streak, setStreak }}>
       {children}
     </CharacterContext.Provider>
   );
