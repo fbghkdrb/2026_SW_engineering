@@ -141,6 +141,16 @@ const WrongNoteQuizPage = () => {
             </div>
           )}
 
+          {/* [PBI-11 추가] 코인 획득 안내 */}
+          {result.coinEarned > 0 && (
+            <div className="bg-yellow-50 rounded-2xl py-3 px-4 flex items-center justify-center gap-2">
+              <span className="text-lg">🪙</span>
+              <p className="text-sm font-bold text-yellow-600">
+                코인 +{result.coinEarned} 획득!
+              </p>
+            </div>
+          )}
+
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/wrong-notes")}

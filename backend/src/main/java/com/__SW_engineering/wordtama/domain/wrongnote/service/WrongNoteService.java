@@ -15,6 +15,7 @@ import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteQuizSubmitReq
 import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteResponse;
 import com.__SW_engineering.wordtama.domain.wrongnote.entity.WrongNote;
 import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPass;
+import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPassType; // [PBI-11 추가]
 import com.__SW_engineering.wordtama.domain.wrongnote.repository.DailyQuizPassRepository;
 import com.__SW_engineering.wordtama.domain.wrongnote.repository.WrongNoteRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
@@ -156,18 +157,31 @@ public class WrongNoteService {
             vitalityGained = VITALITY_GAIN;
         }
 
+        // [PBI-11 추가] 오늘 WRONG_QUIZ 첫 통과 시 15코인 지급
+        boolean alreadyPassedToday = dailyQuizPassRepository
+                .existsByUserIdAndPassDateAndType(userId, LocalDate.now(), DailyQuizPassType.WRONG_QUIZ);
+        int coinEarned = 0;
+        if (qualified && !alreadyPassedToday) {
+            characterService.addCoin(userId, 15);
+            coinEarned = 15;
+        }
+
         // pass 기록을 동일 트랜잭션 내에서 저장 (원자성 보장)
-        dailyQuizPassRepository.save(DailyQuizPass.builder()
-                .user(user)
-                .passDate(LocalDate.now())
-                .quiz(quiz)
-                .build());
+        if (!alreadyPassedToday) { // [PBI-11 수정] 이미 통과 기록 있으면 중복 저장 방지 (정상 응답 반환)
+            dailyQuizPassRepository.save(DailyQuizPass.builder()
+                    .user(user)
+                    .passDate(LocalDate.now())
+                    .quiz(quiz)
+                    .type(DailyQuizPassType.WRONG_QUIZ) // [PBI-11 추가]
+                    .build());
+        }
 
         return WrongNoteQuizResultResponse.builder()
                 .quizId(quiz.getId())
                 .correctCount(correctCount)
                 .totalCount(totalCount)
                 .vitalityGained(vitalityGained)
+                .coinEarned(coinEarned) // [PBI-11 추가]
                 .build();
     }
 
@@ -185,7 +199,7 @@ public class WrongNoteService {
         wrongNoteRepository.delete(wrongNote);
     }
 
-    // 오답 퀴즈 진입 조건 체크: 오답 단어 수 > 20 AND 오늘 미통과
+    // 오답 퀴즈 진입 조건 체크: 오답 단어 수 > 20 AND 오늘 WRONG_QUIZ 미통과
     @Transactional(readOnly = true)
     public void checkQuizEntryCondition(Long userId) {
         User user = userRepository.findById(userId)
@@ -196,9 +210,9 @@ public class WrongNoteService {
             throw new CustomException(ErrorCode.WRONG_NOTE_COUNT_INSUFFICIENT);
         }
 
+        // [PBI-11 수정] WRONG_QUIZ 타입으로만 체크 — 일반 퀴즈 통과 여부와 독립적으로 관리
         boolean alreadyPassed = dailyQuizPassRepository
-                .findByUserIdAndPassDate(userId, LocalDate.now())
-                .isPresent();
+                .existsByUserIdAndPassDateAndType(userId, LocalDate.now(), DailyQuizPassType.WRONG_QUIZ);
         if (alreadyPassed) {
             throw new CustomException(ErrorCode.DAILY_QUIZ_ALREADY_PASSED);
         }

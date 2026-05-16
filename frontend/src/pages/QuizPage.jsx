@@ -11,6 +11,7 @@ import {
   submitQuiz as submitQuizApi,
   fetchTodayPassStatus,
 } from "../api/quizApi";
+import { getInventory, consumeItem } from "../api/shop"; // [PBI-11 추가]
 import { useAuth } from "../context/AuthContext";
 
 const TIMER_SECONDS = 15;
@@ -60,6 +61,9 @@ const QuizPage = () => {
   const [showExitModal, setShowExitModal] = useState(false);
 
   const [isPassedToday, setIsPassedToday] = useState(false);
+  const [timeExtQty, setTimeExtQty] = useState(0);   // [PBI-11 추가] TIME_EXTENSION 보유 수량
+  const [extUsing, setExtUsing] = useState(false);    // [PBI-11 추가] 시간 연장 처리 중 플래그
+  const [extToast, setExtToast] = useState(null);     // [PBI-11 추가] 시간 연장 토스트 메시지
 
   const isMultiple = quizType === "MULTIPLE_EN_KO" || quizType === "MULTIPLE_KO_EN";
 
@@ -150,6 +154,18 @@ const QuizPage = () => {
   // Day 목록 최초 로드
   useEffect(() => {
     loadDays();
+  }, []);
+
+  // [PBI-11 추가] TIME_EXTENSION 보유 수량 초기 조회
+  useEffect(() => {
+    getInventory()
+      .then((res) => {
+        if (res.data.success) {
+          const found = res.data.data.find((i) => i.itemType === "TIME_EXTENSION");
+          setTimeExtQty(found?.quantity ?? 0);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // 오늘 퀴즈 통과 여부 조회 — 실패해도 퀴즈 진행 차단 금지
@@ -269,6 +285,37 @@ const QuizPage = () => {
       setSubmitLoading(false);
     }
   };
+
+  // [PBI-11 추가] 시간 연장 아이템 사용 — BE 수량 차감 후 타이머 +10초
+  const handleTimeExtension = useCallback(async () => {
+    if (extUsing || timeExtQty <= 0) return;
+
+    // Guard: 답변 제출 완료 또는 타이머 만료 상태
+    if (feedback !== null || timeLeft <= 0) {
+      setExtToast("타이머가 만료되어 사용할 수 없습니다");
+      setTimeout(() => setExtToast(null), 2500);
+      return;
+    }
+
+    setExtUsing(true);
+    try {
+      const res = await consumeItem("TIME_EXTENSION");
+      if (res.data.success) {
+        setTimeExtQty(res.data.data.quantity);
+        // API 응답 도착 시점에 feedback이 이미 설정된 경우 타이머 연장 없이 토스트만 표시
+        if (feedback !== null) {
+          setExtToast("타이머가 만료되어 사용할 수 없습니다");
+          setTimeout(() => setExtToast(null), 2500);
+        } else {
+          setTimeLeft((prev) => prev + 10);
+        }
+      }
+    } catch {
+      // 수량 부족 등 오류는 무시 (버튼이 이미 비활성화되어야 하므로)
+    } finally {
+      setExtUsing(false);
+    }
+  }, [extUsing, timeExtQty, feedback, timeLeft]);
 
   const isLastQuestion = questions.length > 0 && currentIndex === questions.length - 1;
   const progressPct = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
@@ -496,15 +543,27 @@ const QuizPage = () => {
           <span className="text-sm font-semibold text-gray-600">
             {currentIndex + 1} / {questions.length}
           </span>
-          {/* 타이머 표시 */}
+          {/* [PBI-11 수정] 타이머 + 시간 연장 버튼 */}
           {timedMode && feedback === null ? (
-            <span
-              className={`text-sm font-bold tabular-nums w-10 text-right ${
-                timeLeft <= 5 ? "text-red-500" : "text-indigo-500"
-              }`}
-            >
-              {timeLeft}s
-            </span>
+            <div className="flex items-center gap-2">
+              {timeExtQty > 0 && (
+                <button
+                  onClick={handleTimeExtension}
+                  disabled={extUsing}
+                  className="text-xs bg-orange-100 hover:bg-orange-200 text-orange-600 font-semibold px-2 py-1 rounded-lg transition-colors disabled:opacity-50"
+                  title={`시간 연장 (보유: ${timeExtQty}개)`}
+                >
+                  ⏰+10s
+                </button>
+              )}
+              <span
+                className={`text-sm font-bold tabular-nums w-10 text-right ${
+                  timeLeft <= 5 ? "text-red-500" : "text-indigo-500"
+                }`}
+              >
+                {timeLeft}s
+              </span>
+            </div>
           ) : (
             <div className="w-10" />
           )}
@@ -727,6 +786,13 @@ const QuizPage = () => {
           )
         )}
       </main>
+
+      {/* 시간 연장 토스트 */}
+      {extToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl shadow-lg text-sm font-semibold bg-gray-800 text-white z-50">
+          {extToast}
+        </div>
+      )}
     </div>
   );
 };

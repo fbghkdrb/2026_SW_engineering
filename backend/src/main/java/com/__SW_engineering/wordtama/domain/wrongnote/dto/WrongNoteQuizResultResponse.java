@@ -11,4 +11,5 @@ public class WrongNoteQuizResultResponse {
     private int correctCount;
     private int totalCount;
     private int vitalityGained;
+    private int coinEarned; // [PBI-11 추가]
 }

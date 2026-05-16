@@ -17,7 +17,7 @@ const QuizResultPage = () => {
     return <Navigate to="/quiz" replace />;
   }
 
-  const { totalCount, correctCount, wrongWords, isFirstPassToday } = state;
+  const { totalCount, correctCount, wrongWords, isFirstPassToday, coinEarned } = state; // [PBI-11 수정] coinEarned 추가
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   const emoji = score === 100 ? "🎉" : score >= 70 ? "👍" : "💪";
@@ -73,9 +73,17 @@ const QuizResultPage = () => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.5 }}
-              className="mt-5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-semibold rounded-xl px-4 py-3"
+              className="mt-5 space-y-2"
             >
-              오늘 첫 퀴즈 통과! 🎉 활력도 +20
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-semibold rounded-xl px-4 py-3">
+                오늘 첫 퀴즈 통과! 🎉 활력도 +20
+              </div>
+              {/* [PBI-11 추가] 코인 획득 안내 */}
+              {coinEarned > 0 && (
+                <div className="bg-orange-50 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl px-4 py-3">
+                  🪙 코인 +{coinEarned} 획득!
+                </div>
+              )}
             </motion.div>
           )}
         </motion.div>

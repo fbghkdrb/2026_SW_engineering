@@ -32,8 +32,13 @@ export const CharacterProvider = ({ children }) => {
     setCharacter(newCharacter);
   }, []);
 
+  // [PBI-11 추가] 구매/사용 후 서버 응답의 코인값으로 로컬 상태만 즉시 갱신
+  const updateCoin = useCallback((newCoin) => {
+    setCharacter((prev) => (prev ? { ...prev, coin: newCoin } : prev));
+  }, []);
+
   return (
-    <CharacterContext.Provider value={{ character, fetchCharacter, updateCharacter }}>
+    <CharacterContext.Provider value={{ character, fetchCharacter, updateCharacter, updateCoin }}>
       {children}
     </CharacterContext.Provider>
   );

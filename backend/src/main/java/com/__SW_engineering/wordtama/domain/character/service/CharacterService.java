@@ -83,6 +83,14 @@ public class CharacterService {
         updateStatus(character);
     }
 
+    // [PBI-11 추가] 코인 증가 (퀴즈 통과 보상, 상점 아이템 구매 환원 등)
+    @Transactional
+    public void addCoin(Long userId, int amount) {
+        Character character = characterRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
+        character.addCoin(amount);
+    }
+
     // vitality 기준으로 status 자동 갱신 (퀴즈·스케줄러 공통 사용)
     private void updateStatus(Character character) {
         int vitality = character.getVitality();

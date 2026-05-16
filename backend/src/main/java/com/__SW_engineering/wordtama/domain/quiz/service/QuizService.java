@@ -2,6 +2,7 @@ package com.__SW_engineering.wordtama.domain.quiz.service;
 
 import com.__SW_engineering.wordtama.domain.character.service.CharacterService;
 import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPass;
+import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPassType; // [PBI-11 추가]
 import com.__SW_engineering.wordtama.domain.wrongnote.repository.DailyQuizPassRepository;
 import com.__SW_engineering.wordtama.domain.wrongnote.service.WrongNoteService;
 import com.__SW_engineering.wordtama.domain.quiz.dto.*;
@@ -121,6 +122,7 @@ public class QuizService {
         PassResult passResult = checkAndRecordDailyPass(userId, quizId, correctCount, totalCount);
         if (passResult.isFirstPassToday()) {
             characterService.addVitality(userId, 20);
+            characterService.addCoin(userId, 10); // [PBI-11 추가] 퀴즈 첫 통과 시 10코인 지급
         }
 
         List<WrongWordDto> wrongWords = answers.stream()
@@ -137,7 +139,7 @@ public class QuizService {
         return QuizResultResponse.builder()
                 .totalCount(totalCount)
                 .correctCount(correctCount)
-                .coinEarned(0)
+                .coinEarned(passResult.isFirstPassToday() ? 10 : 0) // [PBI-11 수정] 실제 지급 코인 반환
                 .wrongWords(wrongWords)
                 .isPassed(passResult.isPassed())
                 .isFirstPassToday(passResult.isFirstPassToday())
@@ -259,9 +261,9 @@ public class QuizService {
             return new PassResult(false, false);
         }
 
+        // [PBI-11 수정] QUIZ 타입으로만 중복 체크 — WRONG_QUIZ 통과 기록과 독립적으로 관리
         boolean alreadyPassed = dailyQuizPassRepository
-                .findByUserIdAndPassDate(userId, LocalDate.now())
-                .isPresent();
+                .existsByUserIdAndPassDateAndType(userId, LocalDate.now(), DailyQuizPassType.QUIZ);
 
         if (alreadyPassed) {
             return new PassResult(true, false);
@@ -278,6 +280,7 @@ public class QuizService {
                             .user(user)
                             .passDate(LocalDate.now())
                             .quiz(quiz)
+                            .type(DailyQuizPassType.QUIZ) // [PBI-11 추가]
                             .build()
             );
         } catch (DataIntegrityViolationException e) {
@@ -290,8 +293,9 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public TodayPassResponse getTodayPassStatus(Long userId) {
+        // [PBI-11 수정] QUIZ 타입으로만 조회
         return dailyQuizPassRepository
-                .findByUserIdAndPassDate(userId, LocalDate.now())
+                .findByUserIdAndPassDateAndType(userId, LocalDate.now(), DailyQuizPassType.QUIZ)
                 .map(pass -> TodayPassResponse.builder()
                         .isPassedToday(true)
                         .passedAt(pass.getCreatedAt())

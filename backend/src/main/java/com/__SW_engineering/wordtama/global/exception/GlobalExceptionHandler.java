@@ -54,6 +54,11 @@ public class GlobalExceptionHandler {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.fail(ErrorCode.DAILY_QUIZ_ALREADY_PASSED.getMessage()));
         }
+        if (message.contains("unique_user_item_type") || message.contains("Duplicate entry")) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.fail("아이템 구매 처리 중 충돌이 발생했습니다. 다시 시도해주세요."));
+        }
         log.error("DataIntegrityViolationException: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

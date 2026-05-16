@@ -11,16 +11,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * 오답 퀴즈 일일 통과 기록 테이블.
- * 실제 운영 시 JPA DDL 자동 생성이 아닌 마이그레이션 스크립트로 별도 관리 필요.
- */
 @Entity
 @Table(
     name = "daily_quiz_pass",
     uniqueConstraints = @UniqueConstraint(
-        name = "unique_user_date",
-        columnNames = {"user_id", "pass_date"}
+        name = "unique_user_date_type",
+        columnNames = {"user_id", "pass_date", "type"}   // [PBI-11 수정] type 추가 — QUIZ와 WRONG_QUIZ가 같은 날 공존 가능하도록
     )
 )
 @Getter
@@ -48,11 +44,17 @@ public class DailyQuizPass {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // [PBI-11 추가] 퀴즈 유형 구분 (QUIZ: 일반 퀴즈, WRONG_QUIZ: 오답 퀴즈)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DailyQuizPassType type;
+
     @Builder
-    public DailyQuizPass(User user, LocalDate passDate, Quiz quiz) {
+    public DailyQuizPass(User user, LocalDate passDate, Quiz quiz, DailyQuizPassType type) {
         this.user = user;
         this.passDate = passDate;
         this.quiz = quiz;
+        this.type = type;
         this.isValid = true;
         this.createdAt = LocalDateTime.now();
     }
