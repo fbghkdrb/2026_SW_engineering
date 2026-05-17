@@ -218,22 +218,6 @@ public class WrongNoteService {
         }
     }
 
-    // 오답 퀴즈 통과 기록 저장
-    @Transactional
-    public void recordDailyQuizPass(Long userId, Long quizId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
-
-        dailyQuizPassRepository.save(DailyQuizPass.builder()
-                .user(user)
-                .passDate(LocalDate.now())
-                .quiz(quiz)
-                .build());
-    }
-
     private WrongNoteQuizQuestionResponse buildQuizQuestion(WrongNote wn, List<String> wrongWordPool) {
         String correctAnswer = wn.getWord().getEnglish();
 

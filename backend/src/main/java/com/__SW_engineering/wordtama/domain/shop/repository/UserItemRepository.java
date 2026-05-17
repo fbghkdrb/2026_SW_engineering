@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface UserItemRepository extends JpaRepository<UserItem, Long> {
 
     Optional<UserItem> findByUserIdAndItemType(Long userId, ItemType itemType);
+
+    void deleteByUserId(Long userId);
 }

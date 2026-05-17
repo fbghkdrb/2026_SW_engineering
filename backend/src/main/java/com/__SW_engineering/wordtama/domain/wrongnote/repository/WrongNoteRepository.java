@@ -13,4 +13,8 @@ public interface WrongNoteRepository extends JpaRepository<WrongNote, Long> {
     List<WrongNote> findByUserOrderByWrongCountDesc(User user);
 
     Optional<WrongNote> findByUserAndWord(User user, Word word);
+
+    void deleteByUser_Id(Long userId);
+
+    void deleteByWord_Id(Long wordId);
 }

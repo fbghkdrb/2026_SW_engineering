@@ -12,6 +12,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     boolean existsByUserIdAndAttendDate(Long userId, LocalDate attendDate);
 
+    void deleteByUserId(Long userId);
+
     @Query("SELECT a.attendDate FROM Attendance a WHERE a.user.id = :userId AND a.attendDate BETWEEN :from AND :to")
     List<LocalDate> findAttendDatesByUserIdBetween(
             @Param("userId") Long userId,

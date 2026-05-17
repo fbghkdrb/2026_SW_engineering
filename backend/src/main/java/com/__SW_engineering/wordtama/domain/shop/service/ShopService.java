@@ -6,13 +6,13 @@ import com.__SW_engineering.wordtama.domain.character.service.CharacterService;
 import com.__SW_engineering.wordtama.domain.shop.dto.*;
 import com.__SW_engineering.wordtama.domain.shop.entity.ItemType;
 import com.__SW_engineering.wordtama.domain.shop.entity.UserItem;
-import com.__SW_engineering.wordtama.domain.shop.entity.UserItem;
 import com.__SW_engineering.wordtama.domain.shop.repository.UserItemRepository;
 import com.__SW_engineering.wordtama.domain.user.entity.User;
 import com.__SW_engineering.wordtama.domain.user.repository.UserRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,15 +47,23 @@ public class ShopService {
         character.deductCoin(itemType.getPrice());
 
         // user_items에 quantity +1 (없으면 INSERT)
-        UserItem userItem = userItemRepository.findByUserIdAndItemType(userId, itemType)
-                .orElseGet(() -> {
-                    User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-                    return userItemRepository.save(UserItem.builder()
-                            .user(user)
-                            .itemType(itemType)
-                            .build());
-                });
+        // 동시 요청으로 unique 제약 위반 시 이미 저장된 레코드를 재조회해 정상 처리
+        UserItem userItem;
+        try {
+            userItem = userItemRepository.findByUserIdAndItemType(userId, itemType)
+                    .orElseGet(() -> {
+                        User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                        return userItemRepository.save(UserItem.builder()
+                                .user(user)
+                                .itemType(itemType)
+                                .build());
+                    });
+        } catch (DataIntegrityViolationException e) {
+            // 동시 INSERT 충돌 → 다른 트랜잭션이 먼저 저장한 레코드 재조회
+            userItem = userItemRepository.findByUserIdAndItemType(userId, itemType)
+                    .orElseThrow(() -> e);
+        }
         userItem.increaseQuantity(1);
 
         return BuyItemResponse.builder()
