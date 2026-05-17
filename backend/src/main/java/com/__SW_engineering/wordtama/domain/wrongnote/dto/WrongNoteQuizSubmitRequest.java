@@ -1,7 +1,6 @@
 package com.__SW_engineering.wordtama.domain.wrongnote.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -25,7 +24,7 @@ public class WrongNoteQuizSubmitRequest {
         @NotNull(message = "wordId는 필수입니다.")
         private Long wordId;
 
-        @NotBlank(message = "userAnswer는 필수입니다.")
+        @NotNull(message = "userAnswer는 필수입니다.")
         private String userAnswer;
     }
 }

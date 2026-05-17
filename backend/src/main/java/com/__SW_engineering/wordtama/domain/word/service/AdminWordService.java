@@ -2,6 +2,7 @@ package com.__SW_engineering.wordtama.domain.word.service;
 
 import com.__SW_engineering.wordtama.domain.quiz.repository.QuizAnswerRepository;
 import com.__SW_engineering.wordtama.domain.word.dto.CsvUploadResponse;
+import com.__SW_engineering.wordtama.domain.wrongnote.repository.WrongNoteRepository;
 import com.__SW_engineering.wordtama.domain.word.dto.WordRequest;
 import com.__SW_engineering.wordtama.domain.word.dto.WordResponse;
 import com.__SW_engineering.wordtama.domain.word.entity.Word;
@@ -36,6 +37,7 @@ public class AdminWordService {
     private final WordRepository wordRepository;
     private final UserWordRepository userWordRepository;
     private final QuizAnswerRepository quizAnswerRepository;
+    private final WrongNoteRepository wrongNoteRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -72,6 +74,7 @@ public class AdminWordService {
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new CustomException(ErrorCode.WORD_NOT_FOUND));
         quizAnswerRepository.deleteByWord_Id(wordId);
+        wrongNoteRepository.deleteByWord_Id(wordId);
         userWordRepository.deleteByWord_Id(wordId);
         wordRepository.delete(word);
     }

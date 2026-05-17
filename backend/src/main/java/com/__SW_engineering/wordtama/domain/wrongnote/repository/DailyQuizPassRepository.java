@@ -13,4 +13,6 @@ public interface DailyQuizPassRepository extends JpaRepository<DailyQuizPass, Lo
     Optional<DailyQuizPass> findByUserIdAndPassDateAndType(Long userId, LocalDate passDate, DailyQuizPassType type);
 
     boolean existsByUserIdAndPassDateAndType(Long userId, LocalDate passDate, DailyQuizPassType type);
+
+    void deleteByUserId(Long userId);
 }

@@ -13,6 +13,7 @@ import {
 } from "../api/quizApi";
 import { getInventory, consumeItem } from "../api/shop"; // [PBI-11 추가]
 import { useAuth } from "../context/AuthContext";
+import { useCharacter } from "../context/CharacterContext";
 
 const TIMER_SECONDS = 15;
 
@@ -26,6 +27,7 @@ const QUIZ_TYPES = [
 const QuizPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { fetchCharacter } = useCharacter();
 
   // 'select' | 'type-select' | 'loading' | 'quiz'
   const [phase, setPhase] = useState("select");
@@ -302,6 +304,7 @@ const QuizPage = () => {
       const res = await consumeItem("TIME_EXTENSION");
       if (res.data.success) {
         setTimeExtQty(res.data.data.quantity);
+        fetchCharacter(); // 코인 차감을 CharacterContext에 반영 (백그라운드)
         // API 응답 도착 시점에 feedback이 이미 설정된 경우 타이머 연장 없이 토스트만 표시
         if (feedback !== null) {
           setExtToast("타이머가 만료되어 사용할 수 없습니다");
@@ -315,7 +318,7 @@ const QuizPage = () => {
     } finally {
       setExtUsing(false);
     }
-  }, [extUsing, timeExtQty, feedback, timeLeft]);
+  }, [extUsing, timeExtQty, feedback, timeLeft, fetchCharacter]);
 
   const isLastQuestion = questions.length > 0 && currentIndex === questions.length - 1;
   const progressPct = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
