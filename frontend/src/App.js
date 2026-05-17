@@ -15,6 +15,7 @@ import QuizResultPage from "./pages/QuizResultPage";
 import WrongNotePage from "./pages/WrongNotePage";
 import WrongNoteQuizPage from "./pages/WrongNoteQuizPage";
 import ShopPage from "./pages/ShopPage"; // [PBI-11 추가]
+import StatsPage from "./pages/StatsPage";
 
 const App = () => {
   return (
@@ -113,6 +114,7 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route path="/stats" element={<PrivateRoute><StatsPage /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </CharacterProvider>

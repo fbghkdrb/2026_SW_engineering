@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProgress } from "../api/stats";
+import { getProgress } from "../api/statsApi";
 
 const useProgress = () => {
   const [progress, setProgress] = useState(null);

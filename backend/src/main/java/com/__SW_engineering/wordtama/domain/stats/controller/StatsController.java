@@ -1,6 +1,8 @@
 package com.__SW_engineering.wordtama.domain.stats.controller;
 
 import com.__SW_engineering.wordtama.domain.stats.dto.ProgressResponseDto;
+import com.__SW_engineering.wordtama.domain.stats.dto.QuizAccuracyDto;
+import com.__SW_engineering.wordtama.domain.stats.dto.WeeklyStatDto;
 import com.__SW_engineering.wordtama.domain.stats.service.StatsService;
 import com.__SW_engineering.wordtama.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/stats")
@@ -22,5 +26,19 @@ public class StatsController {
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(
                 ApiResponse.success(statsService.getProgress(userId), "성공"));
+    }
+
+    @GetMapping("/quiz-accuracy")
+    public ResponseEntity<ApiResponse<List<QuizAccuracyDto>>> getQuizAccuracy(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(statsService.getQuizAccuracy(userId), "성공"));
+    }
+
+    @GetMapping("/weekly")
+    public ResponseEntity<ApiResponse<List<WeeklyStatDto>>> getWeeklyStats(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(statsService.getWeeklyStats(userId), "성공"));
     }
 }

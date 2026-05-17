@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/shop/**").authenticated()   // [PBI-11 추가]
                 .requestMatchers("/api/coins/**").authenticated()  // [PBI-11 추가]
                 .requestMatchers("/api/attendance/**").authenticated()
+                .requestMatchers("/api/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(

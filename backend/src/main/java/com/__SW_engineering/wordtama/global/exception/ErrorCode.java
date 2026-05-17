@@ -28,7 +28,8 @@ public enum ErrorCode {
     INVALID_DIRECTION(HttpStatus.BAD_REQUEST, "direction 파라미터는 필수입니다 (EN_TO_KO / KO_TO_EN)"),
     INSUFFICIENT_WORDS_FOR_QUIZ(HttpStatus.BAD_REQUEST, "객관식 퀴즈를 위한 단어가 부족합니다. 최소 4개가 필요합니다."),
     INSUFFICIENT_ITEM(HttpStatus.BAD_REQUEST, "보유한 아이템이 없습니다."), // [PBI-11 추가]
-    VITALITY_ALREADY_MAX(HttpStatus.BAD_REQUEST, "활력이 이미 최대치(100)입니다.");
+    VITALITY_ALREADY_MAX(HttpStatus.BAD_REQUEST, "활력이 이미 최대치(100)입니다."),
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 알림입니다.");
 
     private final HttpStatus status;
     private final String message;

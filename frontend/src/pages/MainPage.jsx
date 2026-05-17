@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useCharacter } from "../context/CharacterContext";
 import { reviveCharacter } from "../api/characterApi";
+import { getNotifications, markNotificationRead } from "../api/notificationApi";
 import CharacterDisplay from "../components/CharacterDisplay";
 import AttendanceWidget from "../components/AttendanceWidget";
 
 const REVIVE_COST = 50;
+
+// 알림 타입별 배너 색상
+const NOTIFICATION_STYLE = {
+  CHARACTER_DANGER: "bg-red-50 border-red-300 text-red-800",
+  QUIZ_MISSING: "bg-yellow-50 border-yellow-300 text-yellow-800",
+  ATTENDANCE: "bg-blue-50 border-blue-300 text-blue-800",
+};
+
+// 우선순위 순서
+const NOTIFICATION_PRIORITY = ["CHARACTER_DANGER", "QUIZ_MISSING", "ATTENDANCE"];
 
 const VITALITY_COLOR = (v) => {
   if (v >= 70) return "bg-green-400";
@@ -37,10 +48,36 @@ const MainPage = () => {
   const { character, updateCharacter } = useCharacter();
   const [isReviving, setIsReviving] = useState(false);
   const [reviveError, setReviveError] = useState("");
+  const [activeBanner, setActiveBanner] = useState(null);
+
+  // 마운트 시 알림 조회 및 우선순위 1개 배너 선택
+  useEffect(() => {
+    getNotifications()
+      .then(({ data }) => {
+        if (!data.success || !data.data?.length) return;
+        const sorted = [...data.data].sort(
+          (a, b) =>
+            NOTIFICATION_PRIORITY.indexOf(a.type) -
+            NOTIFICATION_PRIORITY.indexOf(b.type)
+        );
+        setActiveBanner(sorted[0]);
+      })
+      .catch(() => {});
+  }, []);
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleDismissBanner = async () => {
+    if (!activeBanner) return;
+    try {
+      await markNotificationRead(activeBanner.id);
+    } catch {
+      // 읽음 처리 실패해도 배너는 닫음
+    }
+    setActiveBanner(null);
   };
 
   const handleRevive = async () => {
@@ -65,6 +102,29 @@ const MainPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 flex flex-col">
+      {/* 알림 배너 */}
+      <AnimatePresence>
+        {activeBanner && (
+          <motion.div
+            key={activeBanner.id}
+            initial={{ opacity: 0, y: -40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className={`flex items-center justify-between px-4 py-3 border-b text-sm font-medium ${NOTIFICATION_STYLE[activeBanner.type] ?? "bg-gray-50 border-gray-200 text-gray-700"}`}
+          >
+            <span>{activeBanner.message}</span>
+            <button
+              onClick={handleDismissBanner}
+              className="ml-4 text-lg leading-none opacity-60 hover:opacity-100 transition-opacity"
+              aria-label="알림 닫기"
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 헤더 */}
       <header className="flex items-center justify-between px-5 py-4 bg-white/70 backdrop-blur shadow-sm">
         <h1 className="text-xl font-bold text-orange-500">WordTama</h1>
