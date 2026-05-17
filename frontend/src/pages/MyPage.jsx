@@ -106,7 +106,7 @@ const MyPage = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
           className="bg-white rounded-2xl shadow p-6"
         >
           <h3 className="text-sm font-semibold text-gray-700 mb-3">위험 구역</h3>
