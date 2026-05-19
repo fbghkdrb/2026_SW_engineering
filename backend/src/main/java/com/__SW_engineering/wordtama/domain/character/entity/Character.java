@@ -59,7 +59,7 @@ public class Character {
             throw new CustomException(ErrorCode.INSUFFICIENT_COIN);
         }
         this.coin -= cost;
-        this.status = CharacterStatus.NORMAL;
+        this.status = CharacterStatus.HAPPY;
         this.vitality = 100;
         this.updatedAt = LocalDateTime.now();
     }

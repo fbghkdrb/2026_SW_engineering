@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
     name = "daily_quiz_pass",
     uniqueConstraints = @UniqueConstraint(
         name = "unique_user_date_type",
-        columnNames = {"user_id", "pass_date", "type"}   // [PBI-11 수정] type 추가 — QUIZ와 WRONG_QUIZ가 같은 날 공존 가능하도록
+        columnNames = {"user_id", "pass_date", "type"}
     )
 )
 @Getter
@@ -44,7 +44,6 @@ public class DailyQuizPass {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // [PBI-11 추가] 퀴즈 유형 구분 (QUIZ: 일반 퀴즈, WRONG_QUIZ: 오답 퀴즈)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DailyQuizPassType type;
@@ -57,5 +56,10 @@ public class DailyQuizPass {
         this.type = type;
         this.isValid = true;
         this.createdAt = LocalDateTime.now();
+    }
+
+    // [PBI-14] 부활 시 50% 리셋에 사용
+    public void invalidate() {
+        this.isValid = false;
     }
 }

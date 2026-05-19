@@ -19,4 +19,7 @@ public class QuizResultResponse {
     private boolean isPassed;
     @JsonProperty("isFirstPassToday")
     private boolean isFirstPassToday;
+    @JsonProperty("isEnding")
+    @Builder.Default
+    private boolean isEnding = false;
 }
