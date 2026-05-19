@@ -3,8 +3,11 @@ package com.__SW_engineering.wordtama.domain.wrongnote.repository;
 import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPass;
 import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPassType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface DailyQuizPassRepository extends JpaRepository<DailyQuizPass, Long> {
@@ -15,4 +18,14 @@ public interface DailyQuizPassRepository extends JpaRepository<DailyQuizPass, Lo
     boolean existsByUserIdAndPassDateAndType(Long userId, LocalDate passDate, DailyQuizPassType type);
 
     void deleteByUserId(Long userId);
+
+    // [PBI-14] 부활 시 50% 리셋용 — is_valid=true인 레코드 전체 조회
+    List<DailyQuizPass> findByUserIdAndIsValidTrue(Long userId);
+
+    // [PBI-14] 엔딩 판단용 — is_valid=true이고 type이 일치하는 distinct pass_date 수 카운트
+    @Query("SELECT COUNT(DISTINCT d.passDate) FROM DailyQuizPass d WHERE d.user.id = :userId AND d.isValid = true AND d.type = :type")
+    long countDistinctPassDateByUserIdAndIsValidTrueAndType(
+            @Param("userId") Long userId,
+            @Param("type") DailyQuizPassType type
+    );
 }

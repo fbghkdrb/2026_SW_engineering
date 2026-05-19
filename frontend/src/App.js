@@ -16,6 +16,7 @@ import WrongNotePage from "./pages/WrongNotePage";
 import WrongNoteQuizPage from "./pages/WrongNoteQuizPage";
 import ShopPage from "./pages/ShopPage"; // [PBI-11 추가]
 import StatsPage from "./pages/StatsPage";
+import EndingPage from "./pages/EndingPage"; // [PBI-14 추가]
 
 const App = () => {
   return (
@@ -115,6 +116,8 @@ const App = () => {
               }
             />
             <Route path="/stats" element={<PrivateRoute><StatsPage /></PrivateRoute>} />
+            {/* [PBI-14 추가] 취업 엔딩 페이지 */}
+            <Route path="/ending" element={<PrivateRoute><EndingPage /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </CharacterProvider>

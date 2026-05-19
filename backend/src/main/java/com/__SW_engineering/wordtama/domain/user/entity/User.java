@@ -31,6 +31,10 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // [PBI-14 v2.0] 취업 엔딩 최초 달성 여부 — 이미 엔딩을 본 유저는 false 유지
+    @Column(name = "is_ended", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean isEnded;
+
     @Builder
     public User(String username, String password, String nickname, Role role) {
         this.username = username;
@@ -42,6 +46,11 @@ public class User {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    // [PBI-14 v2.0] 취업 엔딩 최초 달성 시 1회만 호출
+    public void markEnded() {
+        this.isEnded = true;
     }
 
     public void toggleRole() {

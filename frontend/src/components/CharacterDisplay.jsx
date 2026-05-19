@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCharacter } from "../context/CharacterContext";
 import { getInventory, consumeItem } from "../api/shop";
+import { CHARACTER_IMAGES, EAT_FRAMES, REVIVE_FRAMES } from "../utils/characterImages";
 
 const STATUS_FILTER = {
   HAPPY: "brightness(1.1) saturate(1.3)",
@@ -33,7 +34,7 @@ const Mouth = ({ status }) => {
   return <div className="w-8 h-0.5 bg-gray-800 mt-2" />;
 };
 
-const CharacterDisplay = ({ status = "NORMAL" }) => {
+const CharacterDisplay = ({ status = "NORMAL", isReviving = false }) => {
   const isFaint = status === "FAINT";
   const isHappy = status === "HAPPY";
 
@@ -44,6 +45,17 @@ const CharacterDisplay = ({ status = "NORMAL" }) => {
   const [feedQty, setFeedQty] = useState(0);
   const [using, setUsing] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // 먹이 애니메이션 프레임 인덱스 (0~3)
+  const [eatFrame, setEatFrame] = useState(0);
+  // 부활 애니메이션 프레임 인덱스 (0~1)
+  const [reviveFrame, setReviveFrame] = useState(0);
+  // 이미지 로드 실패 여부
+  const [imgError, setImgError] = useState(false);
+
+  // interval을 useRef로 관리 — StrictMode 이중 실행 시 중복 생성 방지
+  const eatIntervalRef = useRef(null);
+  const reviveIntervalRef = useRef(null);
 
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
@@ -57,6 +69,53 @@ const CharacterDisplay = ({ status = "NORMAL" }) => {
         setFeedQty(feedItem?.quantity ?? 0);
       })
       .catch(() => {});
+  }, []);
+
+  // 먹이 애니메이션: using === true인 동안 150ms 간격으로 프레임 순환
+  useEffect(() => {
+    if (!using) {
+      setEatFrame(0);
+      clearInterval(eatIntervalRef.current);
+      return;
+    }
+    eatIntervalRef.current = setInterval(() => {
+      setEatFrame((prev) => (prev + 1) % EAT_FRAMES.length);
+    }, 150);
+    return () => clearInterval(eatIntervalRef.current);
+  }, [using]);
+
+  // 부활 애니메이션: isReviving === true인 동안 500ms 간격으로 프레임 순환
+  useEffect(() => {
+    if (!isReviving) {
+      setReviveFrame(0);
+      clearInterval(reviveIntervalRef.current);
+      return;
+    }
+    reviveIntervalRef.current = setInterval(() => {
+      setReviveFrame((prev) => (prev + 1) % REVIVE_FRAMES.length);
+    }, 500);
+    return () => clearInterval(reviveIntervalRef.current);
+  }, [isReviving]);
+
+  // 표시할 이미지 결정 (우선순위: isReviving > using > 상태 이미지)
+  const currentImage = (() => {
+    if (isReviving) return REVIVE_FRAMES[reviveFrame];
+    if (using) return EAT_FRAMES[eatFrame];
+    return CHARACTER_IMAGES[status] ?? null;
+  })();
+
+  // 이미지 소스가 바뀌면 에러 상태 초기화
+  useEffect(() => {
+    setImgError(false);
+  }, [currentImage]);
+
+  // 마운트 시 애니메이션 이미지 프리로딩 — 첫 프레임 깜빡임 방지
+  useEffect(() => {
+    [...EAT_FRAMES, ...REVIVE_FRAMES].forEach((src) => {
+      if (!src) return;
+      const img = new Image();
+      img.src = src;
+    });
   }, []);
 
   const handleUseFeed = async () => {
@@ -81,34 +140,43 @@ const CharacterDisplay = ({ status = "NORMAL" }) => {
 
   return (
     <div className="character-wrapper select-none flex flex-col items-center gap-4">
-      {/* 캐릭터 아트 */}
-      <div style={{ filter: STATUS_FILTER[status] ?? "none" }}>
-        <div className="flex flex-col items-center">
-          {/* 머리 */}
-          <div className="relative w-32 h-32 bg-yellow-300 rounded-full flex flex-col items-center justify-center shadow-xl">
-            {isHappy && (
-              <>
-                <div className="absolute left-3 bottom-8 w-8 h-5 bg-pink-300 rounded-full opacity-70" />
-                <div className="absolute right-3 bottom-8 w-8 h-5 bg-pink-300 rounded-full opacity-70" />
-              </>
-            )}
-            <div className="flex gap-6 mb-1">
-              <Eye faint={isFaint} />
-              <Eye faint={isFaint} />
+      {/* 캐릭터 아트: 이미지가 있고 에러 없으면 img, 아니면 CSS 캐릭터 fallback */}
+      {currentImage && !imgError ? (
+        <img
+          src={currentImage}
+          alt={`캐릭터 ${status}`}
+          className="w-40 h-40 object-contain"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <div style={{ filter: STATUS_FILTER[status] ?? "none" }}>
+          <div className="flex flex-col items-center">
+            {/* 머리 */}
+            <div className="relative w-32 h-32 bg-yellow-300 rounded-full flex flex-col items-center justify-center shadow-xl">
+              {isHappy && (
+                <>
+                  <div className="absolute left-3 bottom-8 w-8 h-5 bg-pink-300 rounded-full opacity-70" />
+                  <div className="absolute right-3 bottom-8 w-8 h-5 bg-pink-300 rounded-full opacity-70" />
+                </>
+              )}
+              <div className="flex gap-6 mb-1">
+                <Eye faint={isFaint} />
+                <Eye faint={isFaint} />
+              </div>
+              <Mouth status={status} />
             </div>
-            <Mouth status={status} />
-          </div>
 
-          {/* 몸통 */}
-          <div className="w-24 h-16 bg-yellow-300 rounded-2xl -mt-3 shadow-lg" />
+            {/* 몸통 */}
+            <div className="w-24 h-16 bg-yellow-300 rounded-2xl -mt-3 shadow-lg" />
 
-          {/* 발 */}
-          <div className="flex gap-5 -mt-2">
-            <div className="w-9 h-5 bg-yellow-400 rounded-full" />
-            <div className="w-9 h-5 bg-yellow-400 rounded-full" />
+            {/* 발 */}
+            <div className="flex gap-5 -mt-2">
+              <div className="w-9 h-5 bg-yellow-400 rounded-full" />
+              <div className="w-9 h-5 bg-yellow-400 rounded-full" />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 먹이 사용 버튼 */}
       <div className="relative group">

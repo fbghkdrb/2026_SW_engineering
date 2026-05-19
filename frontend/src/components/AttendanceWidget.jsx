@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAttendance, postAttendance } from "../api/attendanceApi";
 import { useCharacter } from "../context/CharacterContext";
+import { ATTENDANCE_IMAGES } from "../utils/characterImages";
 
 const DAY_LABELS = ["6일전", "5일전", "4일전", "3일전", "2일전", "어제", "오늘"];
 
@@ -141,9 +142,16 @@ const AttendanceWidget = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className={`mt-2 text-xs text-center py-2 px-3 rounded-xl font-semibold ${toastStyle[toast.type]}`}
+            className={`mt-2 text-xs py-2 px-3 rounded-xl font-semibold flex items-center gap-2 ${toastStyle[toast.type]}`}
           >
-            {toast.message}
+            {/* 출석 타입별 이미지 (error 시 이미지 없음) */}
+            {toast.type === "bonus" && ATTENDANCE_IMAGES.BONUS && (
+              <img src={ATTENDANCE_IMAGES.BONUS} alt="보너스 출석" className="w-8 h-8 object-contain flex-shrink-0" />
+            )}
+            {toast.type === "success" && ATTENDANCE_IMAGES.NORMAL && (
+              <img src={ATTENDANCE_IMAGES.NORMAL} alt="출석 체크" className="w-8 h-8 object-contain flex-shrink-0" />
+            )}
+            <span>{toast.message}</span>
           </motion.div>
         )}
       </AnimatePresence>

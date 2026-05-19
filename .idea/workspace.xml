@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15d393d8-8668-45cd-a2fa-c18e89142e12" name="Changes" comment="" />
+    <list default="true" id="15d393d8-8668-45cd-a2fa-c18e89142e12" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/resources/main/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/service/CharacterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/service/CharacterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/dto/QuizResultResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/dto/QuizResultResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/service/QuizService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/service/QuizService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/entity/DailyQuizPass.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/entity/DailyQuizPass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/repository/DailyQuizPassRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/repository/DailyQuizPassRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/AttendanceWidget.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AttendanceWidget.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/CharacterDisplay.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CharacterDisplay.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/MainPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/MainPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/QuizResultPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/QuizResultPage.jsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

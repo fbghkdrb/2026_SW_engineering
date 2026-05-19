@@ -136,13 +136,24 @@ public class QuizService {
 
         wrongNoteService.saveWrongNotes(userId, quizId);
 
+        // [PBI-14 v2.0] 취업 엔딩 판단: distinct day >= 50이고 아직 엔딩을 보지 않은 경우에만 true
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        long distinctPassDays = dailyQuizPassRepository
+                .countDistinctPassDateByUserIdAndIsValidTrueAndType(userId, DailyQuizPassType.QUIZ);
+        boolean isEnding = distinctPassDays >= 50 && !user.isEnded();
+        if (isEnding) {
+            user.markEnded(); // dirty checking으로 자동 반영 (@Transactional)
+        }
+
         return QuizResultResponse.builder()
                 .totalCount(totalCount)
                 .correctCount(correctCount)
-                .coinEarned(passResult.isFirstPassToday() ? 10 : 0) // [PBI-11 수정] 실제 지급 코인 반환
+                .coinEarned(passResult.isFirstPassToday() ? 10 : 0)
                 .wrongWords(wrongWords)
                 .isPassed(passResult.isPassed())
                 .isFirstPassToday(passResult.isFirstPassToday())
+                .isEnding(isEnding)
                 .build();
     }
 

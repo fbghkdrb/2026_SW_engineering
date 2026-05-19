@@ -5,6 +5,8 @@ import com.__SW_engineering.wordtama.domain.character.entity.Character;
 import com.__SW_engineering.wordtama.domain.character.entity.CharacterStatus;
 import com.__SW_engineering.wordtama.domain.character.repository.CharacterRepository;
 import com.__SW_engineering.wordtama.domain.user.entity.User;
+import com.__SW_engineering.wordtama.domain.wrongnote.entity.DailyQuizPass;
+import com.__SW_engineering.wordtama.domain.wrongnote.repository.DailyQuizPassRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class CharacterService {
     private static final long REVIVE_COST = 50L;
 
     private final CharacterRepository characterRepository;
+    private final DailyQuizPassRepository dailyQuizPassRepository;
 
     @Transactional
     public void createCharacter(User user) {
@@ -42,9 +47,23 @@ public class CharacterService {
 
     @Transactional
     public CharacterResponse reviveCharacter(Long userId) {
-        Character character = characterRepository.findByUserId(userId)
+        Character character = characterRepository.findByUserIdWithLock(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
+
+        if (character.getCoin() < REVIVE_COST) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_COIN);
+        }
+
         character.revive(REVIVE_COST);
+
+        // 부활 시 daily_quiz_pass 중 is_valid=true인 레코드의 50% (내림)를 무효화
+        List<DailyQuizPass> validPasses = dailyQuizPassRepository.findByUserIdAndIsValidTrue(userId);
+        Collections.shuffle(validPasses);
+        int invalidCount = Math.floorDiv(validPasses.size(), 2);
+        List<DailyQuizPass> toInvalidate = validPasses.subList(0, invalidCount);
+        toInvalidate.forEach(DailyQuizPass::invalidate);
+        dailyQuizPassRepository.saveAll(toInvalidate);
+
         return new CharacterResponse(
                 character.getStatus().name(),
                 character.getVitality(),

@@ -164,7 +164,7 @@ const MainPage = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 18 }}
         >
-          <CharacterDisplay status={status} />
+          <CharacterDisplay status={status} isReviving={isReviving} />
         </motion.div>
 
         {/* 상태 텍스트 */}

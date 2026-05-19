@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCharacter } from "../context/CharacterContext";
+import { RESULT_IMAGES } from "../utils/characterImages";
 
 const QuizResultPage = () => {
   const { state } = useLocation();
@@ -17,18 +18,26 @@ const QuizResultPage = () => {
     return <Navigate to="/quiz" replace />;
   }
 
-  const { totalCount, correctCount, wrongWords, isFirstPassToday, coinEarned } = state; // [PBI-11 수정] coinEarned 추가
+  const { totalCount, correctCount, wrongWords, isFirstPassToday, coinEarned, isEnding } = state;
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
-  const emoji = score === 100 ? "🎉" : score >= 70 ? "👍" : "💪";
+  // 정답률에 따른 결과 이미지
+  const resultImage =
+    score === 100
+      ? RESULT_IMAGES.PERFECT
+      : score >= 80
+      ? RESULT_IMAGES.GOOD
+      : RESULT_IMAGES.BAD;
+
+  const emoji = score === 100 ? "🎉" : score >= 80 ? "👍" : "💪";
   const message =
     score === 100
       ? "완벽해요! 모두 맞혔습니다."
-      : score >= 70
+      : score >= 80
       ? "잘했어요! 조금만 더 노력해봐요."
       : "다시 풀어서 복습해봐요!";
   const barColor =
-    score === 100 ? "bg-green-400" : score >= 70 ? "bg-indigo-500" : "bg-orange-400";
+    score === 100 ? "bg-green-400" : score >= 80 ? "bg-indigo-500" : "bg-orange-400";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -40,6 +49,18 @@ const QuizResultPage = () => {
           transition={{ duration: 0.4 }}
           className="bg-white rounded-2xl shadow p-8 text-center"
         >
+          {/* 결과 이미지 (정답률에 따라 PERFECT/GOOD/BAD) */}
+          {resultImage && (
+            <motion.img
+              src={resultImage}
+              alt="퀴즈 결과"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mx-auto mb-3 object-contain"
+              style={{ width: 120 }}
+            />
+          )}
           <p className="text-4xl mb-3">{emoji}</p>
           <h1 className="text-2xl font-bold text-gray-800 mb-1">퀴즈 완료!</h1>
           <p className="text-sm text-gray-500 mb-7">{message}</p>
@@ -137,6 +158,20 @@ const QuizResultPage = () => {
         >
           오답노트 보기 📝
         </motion.button>
+
+        {/* [PBI-14] 취업 엔딩 버튼 — isEnding=true일 때만 표시 */}
+        {isEnding && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/ending")}
+            className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold py-4 rounded-2xl shadow-lg text-lg hover:opacity-90 transition-opacity"
+          >
+            취업 성공! 🎉
+          </motion.button>
+        )}
       </main>
     </div>
   );
