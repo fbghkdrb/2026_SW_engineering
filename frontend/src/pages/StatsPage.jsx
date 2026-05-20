@@ -18,11 +18,11 @@ const StatsPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-wt-sky p-6">
       <div className="max-w-lg mx-auto">
         <button
-          onClick={() => navigate("/")}
-          className="text-sm text-indigo-600 hover:underline mb-6 inline-block"
+          onClick={() => navigate("/main")}
+          className="text-sm text-wt-orange hover:underline mb-6 inline-block"
         >
           ← 홈으로
         </button>
@@ -50,7 +50,7 @@ const StatsPage = () => {
                       </span>
                       <div className="w-full bg-gray-100 rounded-t-md overflow-hidden flex flex-col justify-end" style={{ height: "80px" }}>
                         <div
-                          className="w-full bg-indigo-400 rounded-t-md transition-all duration-500"
+                          className="w-full bg-wt-orange rounded-t-md transition-all duration-500"
                           style={{ height: `${(stat.count / maxCount) * 100}%` }}
                         />
                       </div>

@@ -51,11 +51,11 @@ const MyPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-wt-sky p-6">
       <div className="max-w-lg mx-auto">
         <button
-          onClick={() => navigate("/")}
-          className="text-sm text-indigo-600 hover:underline mb-6 inline-block"
+          onClick={() => navigate("/main")}
+          className="text-sm text-wt-orange hover:underline mb-6 inline-block"
         >
           ← 홈으로
         </button>
@@ -83,12 +83,12 @@ const MyPage = () => {
                   setNicknameSuccess("");
                 }}
                 placeholder="2~10자"
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-wt-orange"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white text-sm font-medium rounded-lg transition-colors"
+                className="px-5 py-2.5 bg-wt-orange hover:bg-[#ed5d28] disabled:bg-wt-orange/40 text-white text-sm font-medium rounded-lg transition-colors"
               >
                 저장
               </button>

@@ -107,7 +107,7 @@ const EndingPage = () => {
           transition={{ duration: 0.4, delay: 1.1 }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/main")}
           className="w-full bg-gradient-to-r from-orange-400 to-pink-400 text-white font-bold py-4 rounded-2xl shadow-lg text-base hover:opacity-90 transition-opacity"
         >
           홈으로 돌아가기

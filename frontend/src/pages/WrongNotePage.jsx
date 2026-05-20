@@ -32,7 +32,7 @@ const FlipCard = ({ wn }) => {
           style={{ backfaceVisibility: "hidden" }}
           className="absolute inset-0 bg-white rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 px-6"
         >
-          <p className="text-2xl font-bold text-indigo-700">{wn.english}</p>
+          <p className="text-2xl font-bold text-wt-orange">{wn.english}</p>
           <button
             onClick={handleSpeak}
             disabled={!ttsSupported}
@@ -51,9 +51,9 @@ const FlipCard = ({ wn }) => {
         {/* 뒷면: 한국어 뜻 + 예문 */}
         <div
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-          className="absolute inset-0 bg-indigo-50 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 px-6 text-center overflow-hidden"
+          className="absolute inset-0 bg-wt-sky-dark rounded-2xl shadow-sm flex flex-col items-center justify-center gap-2 px-6 text-center overflow-hidden"
         >
-          <p className="text-xl font-bold text-indigo-800">{wn.korean}</p>
+          <p className="text-xl font-bold text-wt-navy">{wn.korean}</p>
           {wn.example && (
             <p className="text-sm text-gray-600 italic leading-snug">{wn.example}</p>
           )}
@@ -103,11 +103,11 @@ const WrongNotePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-wt-sky flex flex-col">
       {/* 헤더 */}
       <header className="flex items-center gap-3 px-5 py-4 bg-white/70 backdrop-blur shadow-sm sticky top-0 z-10">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/main")}
           className="text-gray-500 hover:text-gray-800 transition-colors text-lg"
         >
           ←

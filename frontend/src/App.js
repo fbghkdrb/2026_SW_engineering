@@ -17,6 +17,7 @@ import WrongNoteQuizPage from "./pages/WrongNoteQuizPage";
 import ShopPage from "./pages/ShopPage"; // [PBI-11 추가]
 import StatsPage from "./pages/StatsPage";
 import EndingPage from "./pages/EndingPage"; // [PBI-14 추가]
+import LandingPage from "./pages/LandingPage";
 
 const App = () => {
   return (
@@ -24,10 +25,11 @@ const App = () => {
       <AuthProvider>
         <CharacterProvider>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route
-              path="/"
+              path="/main"
               element={
                 <PrivateRoute>
                   <MainPage />

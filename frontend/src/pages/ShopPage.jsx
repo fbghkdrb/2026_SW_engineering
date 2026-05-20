@@ -83,19 +83,19 @@ const ShopPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50">
+    <div className="min-h-screen bg-wt-sky">
       {/* 헤더 */}
       <header className="flex items-center gap-3 px-5 py-4 bg-white/70 backdrop-blur shadow-sm sticky top-0 z-10">
         <button
-          onClick={() => navigate("/")}
-          className="text-gray-400 hover:text-orange-500 transition-colors text-lg"
+          onClick={() => navigate("/main")}
+          className="text-gray-400 hover:text-wt-orange transition-colors text-lg"
         >
           ←
         </button>
-        <h1 className="text-xl font-bold text-orange-500">상점</h1>
-        <div className="ml-auto flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1">
+        <h1 className="text-xl font-bold text-wt-orange">상점</h1>
+        <div className="ml-auto flex items-center gap-1.5 bg-wt-orange-light border border-wt-sky-dark rounded-full px-3 py-1">
           <span className="text-base">🪙</span>
-          <span className="text-sm font-bold text-yellow-700">{coin.toLocaleString()}</span>
+          <span className="text-sm font-bold text-wt-orange">{coin.toLocaleString()}</span>
         </div>
       </header>
 
@@ -147,7 +147,7 @@ const ShopPage = () => {
                           disabled={qty <= 0 || usingItem === item.itemType}
                           className={`text-sm font-semibold px-4 py-2 rounded-xl transition-colors ${
                             qty > 0
-                              ? "bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-60"
+                              ? "bg-wt-orange hover:bg-[#ed5d28] text-white disabled:opacity-60"
                               : "bg-gray-100 text-gray-300 cursor-not-allowed"
                           }`}
                         >

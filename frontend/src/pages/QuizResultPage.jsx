@@ -37,10 +37,10 @@ const QuizResultPage = () => {
       ? "잘했어요! 조금만 더 노력해봐요."
       : "다시 풀어서 복습해봐요!";
   const barColor =
-    score === 100 ? "bg-green-400" : score >= 80 ? "bg-indigo-500" : "bg-orange-400";
+    score === 100 ? "bg-green-400" : score >= 80 ? "bg-wt-orange" : "bg-orange-400";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+    <div className="min-h-screen bg-wt-sky p-6">
       <main className="max-w-2xl mx-auto space-y-5">
         {/* 점수 카드 */}
         <motion.div
@@ -68,7 +68,7 @@ const QuizResultPage = () => {
           {/* 정답 수 / 전체 수 */}
           <div className="flex items-center justify-center gap-6 mb-6">
             <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600">{correctCount}</p>
+              <p className="text-4xl font-bold text-wt-orange">{correctCount}</p>
               <p className="text-xs text-gray-400 mt-1">정답</p>
             </div>
             <div className="text-gray-300 text-2xl font-light">/</div>
@@ -139,14 +139,14 @@ const QuizResultPage = () => {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/quiz")}
-            className="flex-1 bg-indigo-600 text-white font-semibold py-3.5 rounded-2xl hover:bg-indigo-700 transition-colors"
+            className="flex-1 bg-wt-orange text-white font-semibold py-3.5 rounded-2xl hover:bg-[#ed5d28] transition-colors"
           >
             다시 풀기
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/words")}
-            className="flex-1 bg-white text-indigo-600 font-semibold py-3.5 rounded-2xl border border-indigo-200 hover:bg-indigo-50 transition-colors"
+            className="flex-1 bg-white text-wt-orange font-semibold py-3.5 rounded-2xl border border-wt-sky-dark hover:bg-wt-orange-light transition-colors"
           >
             단어장으로
           </motion.button>

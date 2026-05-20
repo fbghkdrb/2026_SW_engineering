@@ -201,6 +201,12 @@ const CharacterDisplay = ({ status = "NORMAL", isReviving = false }) => {
             활력도가 최대입니다
           </div>
         )}
+        {/* 먹이 없음 툴팁 */}
+        {!isMaxVitality && feedQty === 0 && (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+            먹이가 없어요. 상점에서 구매하세요
+          </div>
+        )}
       </div>
 
       {/* 토스트 */}

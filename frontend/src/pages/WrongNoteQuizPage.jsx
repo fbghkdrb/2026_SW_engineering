@@ -73,7 +73,7 @@ const WrongNoteQuizPage = () => {
     const isCorrect = choice.toLowerCase() === question.english.toLowerCase();
 
     if (chosen === undefined) {
-      return "bg-white border border-gray-200 text-gray-700 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer";
+      return "bg-white border border-gray-200 text-gray-700 hover:border-wt-orange hover:bg-wt-orange-light cursor-pointer";
     }
     if (isCorrect) {
       return "bg-green-100 border border-green-400 text-green-700 font-semibold";
@@ -92,7 +92,7 @@ const WrongNoteQuizPage = () => {
     const emoji = score === 100 ? "🎉" : score >= 70 ? "👍" : "💪";
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center px-6 py-10">
+      <div className="min-h-screen bg-wt-sky flex flex-col items-center justify-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -166,7 +166,7 @@ const WrongNoteQuizPage = () => {
   // ── 진입 조건 미충족 ───────────────────────────────────────────
   if (entryBlocked) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center px-6 gap-5">
+      <div className="min-h-screen bg-wt-sky flex flex-col items-center justify-center px-6 gap-5">
         <div className="bg-white rounded-3xl shadow-lg p-8 w-full max-w-sm text-center space-y-5">
           <p className="text-4xl">🚫</p>
           <p className="text-gray-700 font-semibold text-sm leading-relaxed">{entryMessage}</p>
@@ -178,7 +178,7 @@ const WrongNoteQuizPage = () => {
           </motion.button>
           <button
             onClick={() => navigate("/wrong-notes")}
-            className="text-indigo-500 hover:underline text-sm"
+            className="text-wt-orange hover:underline text-sm"
           >
             오답노트로 돌아가기
           </button>
@@ -202,7 +202,7 @@ const WrongNoteQuizPage = () => {
         <p className="text-red-500 font-semibold text-center">{fetchError}</p>
         <button
           onClick={() => navigate("/wrong-notes")}
-          className="text-indigo-600 hover:underline text-sm"
+          className="text-wt-orange hover:underline text-sm"
         >
           오답노트로 돌아가기
         </button>
@@ -214,7 +214,7 @@ const WrongNoteQuizPage = () => {
   const answeredCount = Object.keys(selected).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-wt-sky flex flex-col">
       {/* 헤더 */}
       <header className="flex items-center gap-3 px-5 py-4 bg-white/70 backdrop-blur shadow-sm sticky top-0 z-10">
         <button
