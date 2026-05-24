@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import roomBg    from "../assets/background/room.png";
+import libraryBg from "../assets/background/library.png";
+import cafeBg    from "../assets/background/cafe.png";
+import parkBg    from "../assets/background/park.png";
 import { useAuth } from "../context/AuthContext";
 import { useCharacter } from "../context/CharacterContext";
 import { reviveCharacter } from "../api/characterApi";
@@ -42,6 +46,13 @@ const NAV_ITEMS = [
   { label: "통계",    path: "/stats",       icon: "📊" },
 ];
 
+const BG_OPTIONS = [
+  { key: "room",    label: "방",    src: roomBg },
+  { key: "library", label: "도서관", src: libraryBg },
+  { key: "cafe",    label: "카페",   src: cafeBg },
+  { key: "park",    label: "공원",   src: parkBg },
+];
+
 // 로그아웃 SVG 아이콘
 const LogoutIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -61,6 +72,8 @@ const MainPage = () => {
   const [isReviving,   setIsReviving]   = useState(false);
   const [reviveError,  setReviveError]  = useState("");
   const [activeBanner, setActiveBanner] = useState(null);
+  const [bgKey,        setBgKey]        = useState(() => localStorage.getItem("charBg") ?? "room");
+  const [showBgPicker, setShowBgPicker] = useState(false);
   const [todayStats,   setTodayStats]   = useState({
     completedDays: 0, totalDays: 0, progressRate: 0,
     latestAccuracy: 0, quizCount: 0,
@@ -151,6 +164,14 @@ const MainPage = () => {
     }
   };
 
+  const handleBgChange = (key) => {
+    setBgKey(key);
+    localStorage.setItem("charBg", key);
+    setShowBgPicker(false);
+  };
+
+  const currentBg = BG_OPTIONS.find((b) => b.key === bgKey)?.src ?? roomBg;
+
   const vitality = character?.vitality ?? 0;
   const status   = character?.status   ?? "NORMAL";
   const coin     = character?.coin     ?? 0;
@@ -163,13 +184,27 @@ const MainPage = () => {
 
       {/* 캐릭터 패널 스타일 오버라이드 */}
       <style>{`
-        .main-char-wrap .character-wrapper img { width: 364px !important; height: 364px !important; }
-        .main-char-wrap .character-wrapper .w-40 { width: 364px !important; }
-        .main-char-wrap .character-wrapper .h-40 { height: 364px !important; }
+        .main-char-wrap .character-wrapper img { width: 340px !important; height: 340px !important; }
+        .main-char-wrap .character-wrapper .w-40 { width: 340px !important; }
+        .main-char-wrap .character-wrapper .h-40 { height: 340px !important; }
         .main-char-wrap .character-wrapper .relative.group {
           position: absolute !important;
           top: 16px !important;
           right: 16px !important;
+        }
+        .main-char-wrap .character-wrapper .relative.group button:not(:disabled) {
+          background-color: #FF6B35 !important;
+          color: #fff !important;
+        }
+        @keyframes charWalk {
+          from { transform: translateX(-200px) translateY(30px); }
+          to   { transform: translateX(200px) translateY(30px); }
+        }
+        .main-char-wrap .character-wrapper img {
+          animation: charWalk 4s ease-in-out infinite alternate;
+        }
+        .main-char-wrap .character-wrapper > div:first-of-type:not(.relative) {
+          animation: charWalk 4s ease-in-out infinite alternate;
         }
       `}</style>
 
@@ -274,7 +309,9 @@ const MainPage = () => {
         {/* ── 왼쪽 패널: 캐릭터 카드 ── */}
         <div style={{
           flex: 1,
-          background: "linear-gradient(180deg, #BAE0F7 0%, #D6EEFA 100%)",
+          backgroundImage: `url(${currentBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           borderRadius: "20px",
           padding: "28px 20px",
           display: "flex", flexDirection: "column", alignItems: "center", gap: "14px",
@@ -288,23 +325,21 @@ const MainPage = () => {
           <span style={{ position: "absolute", bottom: "130px", right: "16px", color: "#FF6B35", fontSize: "10px", opacity: 0.4, pointerEvents: "none" }}>✦</span>
           <span style={{ position: "absolute", bottom: "70px",  left:  "18px", color: "#BAE0F7", fontSize: "14px", opacity: 0.6, pointerEvents: "none" }}>✦</span>
 
-          {/* CharacterDisplay: 이미지(240px 오버라이드) + 먹이 버튼 + 토스트 */}
-          <motion.div
+          {/* CharacterDisplay: 이미지 CSS 애니메이션 + 먹이 버튼 고정(절대위치) */}
+          <div
             className="main-char-wrap"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 18 }}
-            style={{ flex: 1, width: "100%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}
+            style={{ flex: 1, width: "100%", display: "flex", alignItems: "flex-end", justifyContent: "center" }}
           >
             <CharacterDisplay status={status} isReviving={isReviving} />
-          </motion.div>
+          </div>
 
-          {/* 상태 배지 */}
+          {/* 상태 배지 - 패널 좌측 상단 고정 */}
           <motion.div
             key={status}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             style={{
+              position: "absolute", top: "16px", left: "16px",
               background: badge.bg, color: badge.color,
               borderRadius: "999px", padding: "6px 20px",
               fontSize: "16px", fontWeight: 700,
@@ -328,6 +363,55 @@ const MainPage = () => {
               />
             </div>
           </div>
+
+          {/* 배경 변경 버튼 + 팝업 */}
+          {showBgPicker && (
+            <>
+              <div
+                style={{ position: "fixed", inset: 0, zIndex: 10 }}
+                onClick={() => setShowBgPicker(false)}
+              />
+              <div style={{
+                position: "absolute", top: "96px", left: "16px", zIndex: 11,
+                background: "rgba(255,255,255,0.96)",
+                borderRadius: "12px", padding: "6px",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                display: "flex", flexDirection: "column", gap: "2px",
+                minWidth: "110px",
+              }}>
+                {BG_OPTIONS.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => handleBgChange(key)}
+                    style={{
+                      background: bgKey === key ? "#FF6B35" : "none",
+                      color: bgKey === key ? "#fff" : "#1a1a2e",
+                      border: "none", borderRadius: "8px",
+                      padding: "8px 12px",
+                      fontSize: "13px", fontWeight: 600,
+                      cursor: "pointer", textAlign: "left",
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          <button
+            onClick={() => setShowBgPicker((v) => !v)}
+            style={{
+              position: "absolute", top: "58px", left: "16px",
+              width: "32px", height: "32px",
+              background: "rgba(255,255,255,0.85)",
+              border: "none", borderRadius: "50%",
+              fontSize: "16px", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              zIndex: 12,
+            }}
+            title="배경 변경"
+          >🏠</button>
 
           {/* FAINT 부활 버튼 */}
           {status === "FAINT" && (
@@ -356,22 +440,6 @@ const MainPage = () => {
             </motion.div>
           )}
 
-          {/* CTA */}
-          <button
-            onClick={() => navigate("/words")}
-            style={{
-              width: "100%",
-              background: "#FF6B35", color: "#fff",
-              fontWeight: 700, fontSize: "14px",
-              padding: "12px", borderRadius: "999px", border: "none",
-              cursor: "pointer", flexShrink: 0,
-              transition: "background 0.2s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#ed5d28")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#FF6B35")}
-          >
-            {todayStats.totalDays > 0 ? `DAY ${todayStats.completedDays + 1} 이어하기 →` : "학습 시작하기 →"}
-          </button>
         </div>
 
         {/* ── 오른쪽 패널: 카드 2개 (출석 + 학습 현황) ── */}
@@ -395,7 +463,7 @@ const MainPage = () => {
             minHeight: 0,
           }}>
             <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#1a1a2e", marginBottom: "12px", flexShrink: 0 }}>
-              오늘의 학습 현황
+              학습 현황
             </h3>
             {(todayStats.completedDays > 0 || todayStats.progressRate > 0 || todayStats.latestAccuracy > 0 || todayStats.quizCount > 0) ? (
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", flex: 1, minHeight: 0 }}>

@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { getWrongNotes, deleteWrongNote } from "../api/wrongNoteApi";
+
+const NAV_ITEMS = [
+  { label: "홈",      path: "/main",        icon: "🏠" },
+  { label: "단어장",  path: "/words",       icon: "📚" },
+  { label: "퀴즈",    path: "/quiz",        icon: "✏️" },
+  { label: "오답노트", path: "/wrong-notes", icon: "📝" },
+  { label: "상점",    path: "/shop",        icon: "🛒" },
+  { label: "통계",    path: "/stats",       icon: "📊" },
+];
 
 const ttsSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
@@ -68,6 +77,7 @@ const FlipCard = ({ wn }) => {
 
 const WrongNotePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [wrongNotes, setWrongNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -135,7 +145,7 @@ const WrongNotePage = () => {
       )}
 
       {/* 본문 */}
-      <main className="flex-1 overflow-y-auto px-4 py-5 pb-28 max-w-lg mx-auto w-full">
+      <main className="flex-1 overflow-y-auto px-4 py-5 pb-40 max-w-4xl mx-auto w-full">
         {loading && (
           <div className="flex justify-center py-20 text-gray-400 text-sm">
             불러오는 중...
@@ -160,7 +170,7 @@ const WrongNotePage = () => {
 
         {!loading && !error && wrongNotes.length > 0 && (
           <AnimatePresence>
-            <div className="space-y-6">
+            <div className="grid grid-cols-3 gap-4">
               {wrongNotes.map((wn, idx) => (
                 <motion.div
                   key={wn.wordId}
@@ -197,23 +207,49 @@ const WrongNotePage = () => {
         )}
       </main>
 
-      {/* 하단 고정 버튼 */}
-      {!loading && !error && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-gray-100 px-4 py-4 z-10">
-          <div className="max-w-lg mx-auto">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/wrong-notes/quiz")}
-              disabled={wrongNotes.length < 20}
-              className="w-full bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl transition-colors shadow-md"
-            >
-              {wrongNotes.length < 20
-                ? "오답 단어가 20개 이상이어야 퀴즈를 시작할 수 있습니다"
-                : "오답 퀴즈 시작 ✏️"}
-            </motion.button>
+      {/* 하단 고정 영역: 퀴즈 버튼 + 네비게이션 */}
+      <div className="fixed bottom-0 left-0 right-0 z-10">
+        {!loading && !error && (
+          <div className="bg-white/90 backdrop-blur px-4 pt-3 pb-2">
+            <div className="max-w-4xl mx-auto">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate("/wrong-notes/quiz")}
+                disabled={wrongNotes.length < 20}
+                style={{ background: wrongNotes.length >= 20 ? "#FF6B35" : undefined }}
+                className="w-full disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl transition-colors shadow-md"
+              >
+                {wrongNotes.length < 20
+                  ? "오답 단어가 20개 이상이어야 퀴즈를 시작할 수 있습니다"
+                  : "오답 퀴즈 시작 ✏️"}
+              </motion.button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+        <nav style={{ background: "#fff", borderTop: "1px solid #E8F4FD", padding: "8px 16px", boxShadow: "0 -2px 10px rgba(0,0,0,0.04)" }}>
+          <div style={{ display: "flex", justifyContent: "space-around", maxWidth: "640px", margin: "0 auto" }}>
+            {NAV_ITEMS.map(({ label, path, icon }) => {
+              const active = location.pathname === path;
+              return (
+                <button
+                  key={label}
+                  onClick={() => navigate(path)}
+                  style={{
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
+                    padding: "6px 10px", border: "none", background: "none", cursor: "pointer",
+                    color: active ? "#FF6B35" : "#8BAFC7",
+                    fontWeight: active ? 700 : 500,
+                    transition: "color 0.15s",
+                  }}
+                >
+                  <span style={{ fontSize: "18px" }}>{icon}</span>
+                  <span style={{ fontSize: "11px" }}>{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      </div>
     </div>
   );
 };

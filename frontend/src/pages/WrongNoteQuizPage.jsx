@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { getWrongNoteQuiz, submitWrongNoteQuiz } from "../api/wrongNoteApi";
 import { useCharacter } from "../context/CharacterContext";
+import resultPerfect from "../assets/character/result_perfect.png";
+import resultGood    from "../assets/character/result_good.png";
+import resultBad     from "../assets/character/result_bad.png";
 
 const WrongNoteQuizPage = () => {
   const navigate = useNavigate();
   const { fetchCharacter } = useCharacter();
 
   const [questions, setQuestions] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState({}); // { wordId: chosenAnswer }
   const [result, setResult] = useState(null);   // { correctCount, totalCount, vitalityGained }
   const [loading, setLoading] = useState(true);
@@ -89,72 +93,66 @@ const WrongNoteQuizPage = () => {
     const score = result.totalCount > 0
       ? Math.round((result.correctCount / result.totalCount) * 100)
       : 0;
-    const emoji = score === 100 ? "🎉" : score >= 70 ? "👍" : "💪";
+    const resultImg = score >= 80 ? resultPerfect : score >= 50 ? resultGood : resultBad;
 
     return (
-      <div className="min-h-screen bg-wt-sky flex flex-col items-center justify-center px-6 py-10">
+      <div style={{ minHeight: "100vh", background: "#D6EEFA", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px" }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 180, damping: 18 }}
-          className="bg-white rounded-3xl shadow-lg p-10 w-full max-w-sm text-center space-y-5"
+          style={{ background: "#fff", borderRadius: "24px", boxShadow: "0 8px 32px rgba(0,0,0,0.10)", padding: "40px 32px", width: "100%", maxWidth: "480px", textAlign: "center" }}
         >
-          <p className="text-5xl">{emoji}</p>
-          <h2 className="text-2xl font-bold text-gray-800">오답 퀴즈 완료!</h2>
+          <img src={resultImg} alt="결과 캐릭터" style={{ width: "120px", height: "120px", objectFit: "contain", margin: "0 auto 16px" }} />
+          <h2 style={{ fontSize: "24px", fontWeight: 800, color: "#1a1a2e", marginBottom: "20px" }}>오답 퀴즈 완료!</h2>
 
-          <div className="flex items-center justify-center gap-6">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "24px", marginBottom: "16px" }}>
             <div>
-              <p className="text-4xl font-bold text-red-500">{result.correctCount}</p>
-              <p className="text-xs text-gray-400 mt-1">정답</p>
+              <p style={{ fontSize: "40px", fontWeight: 800, color: "#FF6B35" }}>{result.correctCount}</p>
+              <p style={{ fontSize: "12px", color: "#8BAFC7", marginTop: "4px" }}>정답</p>
             </div>
-            <div className="text-gray-200 text-2xl">/</div>
+            <div style={{ fontSize: "24px", color: "#E8F4FD" }}>/</div>
             <div>
-              <p className="text-4xl font-bold text-gray-700">{result.totalCount}</p>
-              <p className="text-xs text-gray-400 mt-1">전체</p>
+              <p style={{ fontSize: "40px", fontWeight: 800, color: "#1a1a2e" }}>{result.totalCount}</p>
+              <p style={{ fontSize: "12px", color: "#8BAFC7", marginTop: "4px" }}>전체</p>
             </div>
           </div>
 
           {/* 점수 바 */}
-          <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+          <div style={{ height: "10px", background: "#E8F4FD", borderRadius: "999px", overflow: "hidden", marginBottom: "20px" }}>
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${score}%` }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="h-full rounded-full bg-red-400"
+              style={{ height: "100%", borderRadius: "999px", background: "#FF6B35" }}
             />
           </div>
 
           {/* 활력도 획득 안내 */}
           {result.vitalityGained > 0 ? (
-            <div className="bg-orange-50 rounded-2xl py-3 px-4 flex items-center justify-center gap-2">
-              <span className="text-lg">⚡</span>
-              <p className="text-sm font-bold text-orange-500">
-                활력도 +{result.vitalityGained} 획득!
-              </p>
+            <div style={{ background: "#FFF3EE", borderRadius: "16px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "12px" }}>
+              <span style={{ fontSize: "18px" }}>⚡</span>
+              <p style={{ fontSize: "14px", fontWeight: 700, color: "#FF6B35" }}>활력도 +{result.vitalityGained} 획득!</p>
             </div>
           ) : (
-            <div className="bg-gray-50 rounded-2xl py-3 px-4 flex items-center justify-center gap-2">
-              <span className="text-lg">💡</span>
-              <p className="text-sm text-gray-500">
-                80% 이상 맞혀야 활력도를 획득할 수 있어요
-              </p>
+            <div style={{ background: "#F7FAFF", borderRadius: "16px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "12px" }}>
+              <span style={{ fontSize: "18px" }}>💡</span>
+              <p style={{ fontSize: "14px", color: "#8BAFC7" }}>80% 이상 맞혀야 활력도를 획득할 수 있어요</p>
             </div>
           )}
 
           {/* [PBI-11 추가] 코인 획득 안내 */}
           {result.coinEarned > 0 && (
-            <div className="bg-yellow-50 rounded-2xl py-3 px-4 flex items-center justify-center gap-2">
-              <span className="text-lg">🪙</span>
-              <p className="text-sm font-bold text-yellow-600">
-                코인 +{result.coinEarned} 획득!
-              </p>
+            <div style={{ background: "#FFFBE6", borderRadius: "16px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "12px" }}>
+              <span style={{ fontSize: "18px" }}>🪙</span>
+              <p style={{ fontSize: "14px", fontWeight: 700, color: "#d97706" }}>코인 +{result.coinEarned} 획득!</p>
             </div>
           )}
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/wrong-notes")}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 rounded-2xl transition-colors"
+            style={{ width: "100%", background: "#FF6B35", color: "#fff", fontWeight: 700, fontSize: "15px", padding: "14px", borderRadius: "999px", border: "none", cursor: "pointer", marginTop: "8px" }}
           >
             오답노트로 돌아가기
           </motion.button>
@@ -212,105 +210,102 @@ const WrongNoteQuizPage = () => {
 
   // ── 퀴즈 문제 화면 ─────────────────────────────────────────────
   const answeredCount = Object.keys(selected).length;
+  const currentQ = questions[currentIndex];
+  const isLast = currentIndex === questions.length - 1;
+  const currentAnswered = currentQ && selected[currentQ.wordId] !== undefined;
 
   return (
-    <div className="min-h-screen bg-wt-sky flex flex-col">
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#D6EEFA", overflow: "hidden" }}>
       {/* 헤더 */}
-      <header className="flex items-center gap-3 px-5 py-4 bg-white/70 backdrop-blur shadow-sm sticky top-0 z-10">
-        <button
-          onClick={() => navigate("/wrong-notes")}
-          className="text-gray-500 hover:text-gray-800 transition-colors text-lg"
-        >
-          ←
-        </button>
-        <h1 className="text-lg font-bold text-gray-800">오답 퀴즈</h1>
-        <span className="ml-auto text-sm text-gray-500 font-medium">
-          {answeredCount} / {questions.length}
-        </span>
+      <header style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 20px", background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", flexShrink: 0 }}>
+        <button onClick={() => navigate("/wrong-notes")} style={{ background: "none", border: "none", fontSize: "20px", cursor: "pointer", color: "#8BAFC7" }}>←</button>
+        <span style={{ fontSize: "18px", fontWeight: 800, color: "#1a1a2e" }}>오답 퀴즈</span>
+        <span style={{ marginLeft: "auto", fontSize: "13px", color: "#8BAFC7", fontWeight: 600 }}>{currentIndex + 1} / {questions.length}</span>
       </header>
 
       {/* 진행 바 */}
-      <div className="h-1.5 bg-gray-100">
+      <div style={{ height: "6px", background: "#E8F4FD", flexShrink: 0 }}>
         <motion.div
-          className="h-full bg-red-400"
-          initial={{ width: 0 }}
+          style={{ height: "100%", background: "#FF6B35" }}
           animate={{ width: `${questions.length ? (answeredCount / questions.length) * 100 : 0}%` }}
           transition={{ duration: 0.3 }}
         />
       </div>
 
-      {/* 문제 목록 */}
-      <main className="flex-1 overflow-y-auto px-4 py-5 pb-28 max-w-lg mx-auto w-full space-y-5">
-        <AnimatePresence>
-          {questions.map((q, idx) => (
-            <motion.div
-              key={q.wordId}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: idx * 0.05 }}
-              className="bg-white rounded-2xl shadow-sm p-5 space-y-4"
-            >
-              {/* 문제 번호 + 한국어 */}
-              <div>
-                <span className="text-xs font-bold text-red-400 uppercase tracking-wide">
-                  Q{idx + 1}
-                </span>
-                <p className="text-lg font-bold text-gray-800 mt-1">{q.korean}</p>
-              </div>
+      {/* 문제 카드 */}
+      <main style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px 24px" }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.2 }}
+            style={{ background: "#fff", borderRadius: "20px", padding: "28px 24px", width: "100%", maxWidth: "480px", boxShadow: "0 4px 20px rgba(0,0,0,0.07)" }}
+          >
+            <div style={{ marginBottom: "24px" }}>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#FF6B35", letterSpacing: "0.05em" }}>Q{currentIndex + 1}</span>
+              <p style={{ fontSize: "22px", fontWeight: 800, color: "#1a1a2e", marginTop: "6px" }}>{currentQ.korean}</p>
+            </div>
 
-              {/* 보기 */}
-              <div className="grid grid-cols-2 gap-2">
-                {q.choices.map((choice) => (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              {currentQ.choices.map((choice) => {
+                const chosen = selected[currentQ.wordId];
+                const isCorrect = choice.toLowerCase() === currentQ.english.toLowerCase();
+                let bg = "#F7FAFF", border = "#E8F4FD", color = "#1a1a2e";
+                if (chosen !== undefined) {
+                  if (isCorrect) { bg = "#dcfce7"; border = "#86efac"; color = "#166534"; }
+                  else if (chosen === choice) { bg = "#fee2e2"; border = "#fca5a5"; color = "#991b1b"; }
+                  else { color = "#aaa"; }
+                }
+                return (
                   <button
                     key={choice}
-                    onClick={() => handleSelect(q.wordId, choice)}
-                    className={`py-3 px-3 rounded-xl text-sm text-left transition-all ${getChoiceStyle(q, choice)}`}
+                    onClick={() => handleSelect(currentQ.wordId, choice)}
+                    style={{ background: bg, border: `1.5px solid ${border}`, color, borderRadius: "12px", padding: "12px", fontSize: "14px", fontWeight: 600, textAlign: "left", cursor: chosen !== undefined ? "default" : "pointer", transition: "all 0.15s" }}
                   >
                     {choice}
                   </button>
-                ))}
-              </div>
+                );
+              })}
+            </div>
 
-              {/* 선택 후 정답 표시 */}
-              {selected[q.wordId] !== undefined && (
-                <motion.p
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`text-xs font-semibold ${
-                    selected[q.wordId].toLowerCase() === q.english.toLowerCase()
-                      ? "text-green-600"
-                      : "text-red-500"
-                  }`}
-                >
-                  {selected[q.wordId].toLowerCase() === q.english.toLowerCase()
-                    ? "✓ 정답!"
-                    : `✗ 오답 — 정답: ${q.english}`}
-                </motion.p>
-              )}
-            </motion.div>
-          ))}
+            {currentAnswered && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ marginTop: "14px", fontSize: "13px", fontWeight: 700, color: selected[currentQ.wordId]?.toLowerCase() === currentQ.english.toLowerCase() ? "#166534" : "#991b1b" }}
+              >
+                {selected[currentQ.wordId]?.toLowerCase() === currentQ.english.toLowerCase()
+                  ? "✓ 정답!"
+                  : `✗ 오답 — 정답: ${currentQ.english}`}
+              </motion.p>
+            )}
+          </motion.div>
         </AnimatePresence>
       </main>
 
-      {/* 하단 제출 버튼 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-gray-100 px-4 py-4 z-10">
-        <div className="max-w-lg mx-auto space-y-2">
-          {submitError && (
-            <p className="text-xs text-red-500 text-center font-medium">{submitError}</p>
-          )}
+      {/* 하단 버튼 */}
+      <div style={{ padding: "16px 24px", background: "#fff", borderTop: "1px solid #E8F4FD", flexShrink: 0 }}>
+        {submitError && <p style={{ fontSize: "12px", color: "#ef4444", textAlign: "center", marginBottom: "8px", fontWeight: 600 }}>{submitError}</p>}
+        {isLast ? (
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={handleSubmit}
             disabled={!allAnswered || submitting}
-            className="w-full bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl transition-colors shadow-md"
+            style={{ width: "100%", background: allAnswered && !submitting ? "#FF6B35" : "#d1d5db", color: "#fff", fontWeight: 700, fontSize: "15px", padding: "14px", borderRadius: "999px", border: "none", cursor: allAnswered && !submitting ? "pointer" : "not-allowed", transition: "background 0.2s" }}
           >
-            {submitting
-              ? "제출 중..."
-              : allAnswered
-              ? "제출하기"
-              : `${questions.length - answeredCount}문제 남았습니다`}
+            {submitting ? "제출 중..." : allAnswered ? "제출하기" : `${questions.length - answeredCount}문제 남았습니다`}
           </motion.button>
-        </div>
+        ) : (
+          <motion.button
+            whileTap={currentAnswered ? { scale: 0.97 } : {}}
+            onClick={() => currentAnswered && setCurrentIndex((i) => i + 1)}
+            style={{ width: "100%", background: currentAnswered ? "#FF6B35" : "#d1d5db", color: "#fff", fontWeight: 700, fontSize: "15px", padding: "14px", borderRadius: "999px", border: "none", cursor: currentAnswered ? "pointer" : "not-allowed", transition: "background 0.2s" }}
+          >
+            다음 →
+          </motion.button>
+        )}
       </div>
     </div>
   );
