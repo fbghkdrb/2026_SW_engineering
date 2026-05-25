@@ -8,16 +8,13 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/resources/main/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/service/CharacterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/service/CharacterService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/dto/QuizResultResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/dto/QuizResultResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/service/QuizService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/service/QuizService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/entity/DailyQuizPass.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/entity/DailyQuizPass.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/repository/DailyQuizPassRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/repository/DailyQuizPassRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/AttendanceWidget.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AttendanceWidget.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/CharacterDisplay.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CharacterDisplay.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/MainPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/MainPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/QuizResultPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/QuizResultPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/QuizPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/QuizPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ShopPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ShopPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StatsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StatsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/WrongNotePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/WrongNotePage.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,23 +55,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.WordtamaApplication.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.WordtamaApplication.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "develop",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="WordtamaApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.__SW_engineering.wordtama.WordtamaApplication" />
