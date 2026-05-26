@@ -3,6 +3,7 @@ package com.__SW_engineering.wordtama.domain.quiz.repository;
 import com.__SW_engineering.wordtama.domain.quiz.entity.Quiz;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,9 +18,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
     void deleteByUser_Id(Long userId);
 
-    @Query("SELECT COALESCE(MAX(q.day), 0) FROM Quiz q")
-    int findMaxDay();
-
     // 최근 완료 퀴즈 10개 (정답률 목록용)
     List<Quiz> findTop10ByUser_IdAndCompletedTrueOrderByCreatedAtDesc(Long userId);
 
@@ -29,6 +27,9 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     // 특정 기간 내 완료된 퀴즈 조회 (주간 통계 - 완료 기준)
     List<Quiz> findByUser_IdAndCompletedTrueAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
-    // 특정 기간 내 퀴즈 존재 여부 (알림 스케줄러용)
-    boolean existsByUser_IdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+    // 오늘 퀴즈에 참여한 유저 ID 목록 (알림 스케줄러 N+1 방지)
+    @Query("SELECT DISTINCT q.user.id FROM Quiz q WHERE q.createdAt BETWEEN :start AND :end")
+    List<Long> findUserIdsWithQuizBetween(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 }

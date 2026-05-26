@@ -14,7 +14,6 @@ import CharacterDisplay from "../components/CharacterDisplay";
 import AttendanceWidget from "../components/AttendanceWidget";
 import { isSoundOn, toggleSound } from "../utils/sound";
 
-const REVIVE_COST = 50;
 
 const NOTIFICATION_STYLE = {
   CHARACTER_DANGER: { bg: "#FFF1F0", border: "#FFA39E", text: "#820014" },
@@ -60,6 +59,7 @@ const MainPage = () => {
   const location  = useLocation();
   const { user, logout } = useAuth();
   const { character, updateCharacter } = useCharacter();
+  const reviveCost = character?.reviveCost ?? 50;
 
   const [isReviving,   setIsReviving]   = useState(false);
   const [reviveError,  setReviveError]  = useState("");
@@ -106,7 +106,7 @@ const MainPage = () => {
         );
         setActiveBanner(sorted[0]);
       })
-      .catch(() => {});
+      .catch((err) => console.error("[MainPage] 알림 조회 실패:", err));
   }, []);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ const MainPage = () => {
           }));
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error("[MainPage] 진도 조회 실패:", err));
 
     getQuizAccuracy()
       .then(({ data }) => {
@@ -144,7 +144,7 @@ const MainPage = () => {
           }
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error("[MainPage] 정답률 조회 실패:", err));
   }, []);
 
   const handleLogout = async () => { await logout(); navigate("/login"); };
@@ -357,7 +357,7 @@ const MainPage = () => {
                   padding: "10px", borderRadius: "12px", border: "none",
                   cursor: isReviving ? "not-allowed" : "pointer", transition: "background 0.2s",
                 }}>
-                {isReviving ? "부활 중..." : `부활하기 (${REVIVE_COST}코인)`}
+                {isReviving ? "부활 중..." : `부활하기 (${reviveCost}코인)`}
               </button>
               {reviveError && <p style={{ fontSize: "11px", color: "#ef4444" }}>{reviveError}</p>}
             </motion.div>

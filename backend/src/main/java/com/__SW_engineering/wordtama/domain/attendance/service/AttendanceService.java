@@ -10,6 +10,7 @@ import com.__SW_engineering.wordtama.domain.user.repository.UserRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +26,10 @@ import java.util.Set;
 public class AttendanceService {
 
     private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
-    // 스트릭 계산 시 최대 역산 범위
     private static final int STREAK_RANGE_DAYS = 365;
+    private static final int ATTENDANCE_COIN_REWARD = 10;
+    private static final int STREAK_BONUS_COIN = 50;
+    private static final int STREAK_BONUS_INTERVAL = 7;
 
     private final AttendanceRepository attendanceRepository;
     private final CharacterService characterService;
@@ -49,20 +52,30 @@ public class AttendanceService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        attendanceRepository.save(Attendance.builder()
-                .user(user)
-                .attendDate(today)
-                .build());
+        try {
+            attendanceRepository.saveAndFlush(Attendance.builder()
+                    .user(user)
+                    .attendDate(today)
+                    .build());
+        } catch (DataIntegrityViolationException e) {
+            // 동시 요청으로 이미 출석 처리된 경우
+            int streak = fetchAndCalculateStreak(userId, today, true);
+            return AttendanceCheckResponseDto.builder()
+                    .alreadyChecked(true)
+                    .streak(streak)
+                    .bonusGranted(false)
+                    .build();
+        }
 
         // 기본 출석 코인 지급
-        characterService.addCoin(userId, 10);
+        characterService.addCoin(userId, ATTENDANCE_COIN_REWARD);
 
         // JPQL 쿼리 실행 전 flush되어 방금 INSERT된 행이 streak 계산에 포함됨
         int streak = fetchAndCalculateStreak(userId, today, true);
 
-        boolean bonusGranted = (streak > 0 && streak % 7 == 0);
+        boolean bonusGranted = (streak > 0 && streak % STREAK_BONUS_INTERVAL == 0);
         if (bonusGranted) {
-            characterService.addCoin(userId, 50);
+            characterService.addCoin(userId, STREAK_BONUS_COIN);
         }
 
         return AttendanceCheckResponseDto.builder()

@@ -41,7 +41,8 @@ public class CharacterService {
         return new CharacterResponse(
                 character.getStatus().name(),
                 character.getVitality(),
-                character.getCoin()
+                character.getCoin(),
+                REVIVE_COST
         );
     }
 
@@ -67,22 +68,9 @@ public class CharacterService {
         return new CharacterResponse(
                 character.getStatus().name(),
                 character.getVitality(),
-                character.getCoin()
+                character.getCoin(),
+                REVIVE_COST
         );
-    }
-
-    // 퀴즈 정답률 80% 이상이면 vitality +20
-    @Transactional
-    public void applyQuizResult(Long userId, int correctCount, int totalCount) {
-        if (totalCount == 0) return;
-
-        double correctRate = (double) correctCount / totalCount * 100;
-        if (correctRate >= 80) {
-            Character character = characterRepository.findByUserId(userId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
-            character.updateVitality(20);
-            updateStatus(character);
-        }
     }
 
     // 스케줄러용: 전체 사용자 vitality -15 배치 처리

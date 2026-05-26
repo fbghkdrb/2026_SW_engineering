@@ -65,7 +65,7 @@ const CircleTimer = ({ timeLeft, total }) => {
 
 const QuizPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  useAuth();
   const { character, fetchCharacter } = useCharacter();
   const coin = character?.coin ?? 0;
 
@@ -172,7 +172,20 @@ const QuizPage = () => {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [phase]);
-  useEffect(() => { loadDays(); }, []);
+  const loadDays = useCallback(async () => {
+    setLoadingDays(true);
+    setDaysError(null);
+    try {
+      const res = await getDays();
+      setDays(res.data.data);
+    } catch {
+      setDaysError("day 목록을 불러오지 못했습니다.");
+    } finally {
+      setLoadingDays(false);
+    }
+  }, []);
+
+  useEffect(() => { loadDays(); }, [loadDays]);
   useEffect(() => {
     getInventory()
       .then((res) => {
@@ -191,18 +204,6 @@ const QuizPage = () => {
     if (phase === "quiz" && feedback === null && !isMultiple) inputRef.current?.focus();
   }, [phase, currentIndex, feedback, isMultiple]);
 
-  const loadDays = async () => {
-    setLoadingDays(true);
-    setDaysError(null);
-    try {
-      const res = await getDays();
-      setDays(res.data.data);
-    } catch {
-      setDaysError("day 목록을 불러오지 못했습니다.");
-    } finally {
-      setLoadingDays(false);
-    }
-  };
 
   const handleStartQuiz = async () => {
     submittingRef.current = false;
@@ -300,6 +301,8 @@ const QuizPage = () => {
         }
       }
     } catch {
+      setExtToast("아이템 사용에 실패했습니다.");
+      setTimeout(() => setExtToast(null), 2500);
     } finally {
       setExtUsing(false);
     }

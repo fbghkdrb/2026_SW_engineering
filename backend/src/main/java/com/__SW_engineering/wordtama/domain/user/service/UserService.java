@@ -3,6 +3,7 @@ package com.__SW_engineering.wordtama.domain.user.service;
 import com.__SW_engineering.wordtama.domain.attendance.repository.AttendanceRepository;
 import com.__SW_engineering.wordtama.domain.auth.repository.RefreshTokenRepository;
 import com.__SW_engineering.wordtama.domain.character.repository.CharacterRepository;
+import com.__SW_engineering.wordtama.domain.notification.repository.NotificationRepository;
 import com.__SW_engineering.wordtama.domain.quiz.repository.QuizAnswerRepository;
 import com.__SW_engineering.wordtama.domain.quiz.repository.QuizRepository;
 import com.__SW_engineering.wordtama.domain.shop.repository.UserItemRepository;
@@ -33,6 +34,7 @@ public class UserService {
     private final DailyQuizPassRepository dailyQuizPassRepository;
     private final UserItemRepository userItemRepository;
     private final AttendanceRepository attendanceRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional(readOnly = true)
     public UserResponse getMe(Long userId) {
@@ -58,6 +60,7 @@ public class UserService {
         attendanceRepository.deleteByUserId(userId);
         characterRepository.deleteByUserId(userId);
         refreshTokenRepository.deleteByUserId(userId);
+        notificationRepository.deleteByUser_Id(userId);
         userRepository.delete(user);
     }
 

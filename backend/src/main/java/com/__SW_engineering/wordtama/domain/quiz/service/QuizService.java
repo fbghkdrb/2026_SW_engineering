@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 public class QuizService {
 
     private static final int QUIZ_SIZE = 10;
+    private static final int PASS_THRESHOLD_PERCENT = 80;
+    private static final int FIRST_PASS_VITALITY_REWARD = 20;
+    private static final int FIRST_PASS_COIN_REWARD = 10;
 
     private final QuizRepository quizRepository;
     private final QuizAnswerRepository quizAnswerRepository;
@@ -121,8 +124,8 @@ public class QuizService {
         // PBI-08: 하루 1회 통과 체크 및 vitality 보상
         PassResult passResult = checkAndRecordDailyPass(userId, quizId, correctCount, totalCount);
         if (passResult.isFirstPassToday()) {
-            characterService.addVitality(userId, 20);
-            characterService.addCoin(userId, 10); // [PBI-11 추가] 퀴즈 첫 통과 시 10코인 지급
+            characterService.addVitality(userId, FIRST_PASS_VITALITY_REWARD);
+            characterService.addCoin(userId, FIRST_PASS_COIN_REWARD);
         }
 
         List<WrongWordDto> wrongWords = answers.stream()
@@ -149,7 +152,7 @@ public class QuizService {
         return QuizResultResponse.builder()
                 .totalCount(totalCount)
                 .correctCount(correctCount)
-                .coinEarned(passResult.isFirstPassToday() ? 10 : 0)
+                .coinEarned(passResult.isFirstPassToday() ? FIRST_PASS_COIN_REWARD : 0)
                 .wrongWords(wrongWords)
                 .isPassed(passResult.isPassed())
                 .isFirstPassToday(passResult.isFirstPassToday())
@@ -174,9 +177,7 @@ public class QuizService {
         List<Word> questionWords = dayWords.stream().limit(QUIZ_SIZE).collect(Collectors.toList());
 
         // 다른 day 단어 (보기 보충용 — 같은 day 단어가 4개 미만일 때)
-        List<Word> otherDayWords = new ArrayList<>(wordRepository.findAllByOrderByDayAscIdAsc().stream()
-                .filter(w -> !w.getDay().equals(day))
-                .collect(Collectors.toList()));
+        List<Word> otherDayWords = new ArrayList<>(wordRepository.findByDayNotOrderByDayAscIdAsc(day));
 
         List<MultipleQuizQuestionResponse> result = new ArrayList<>();
         for (Word questionWord : questionWords) {
@@ -268,7 +269,7 @@ public class QuizService {
 
     // 통과 여부 판정 및 하루 1회 DailyQuizPass 저장
     private PassResult checkAndRecordDailyPass(Long userId, Long quizId, int correctCount, int totalCount) {
-        if (totalCount <= 0 || (correctCount * 100 / totalCount) < 80) {
+        if (totalCount <= 0 || (correctCount * 100 / totalCount) < PASS_THRESHOLD_PERCENT) {
             return new PassResult(false, false);
         }
 
