@@ -1,5 +1,6 @@
 package com.__SW_engineering.wordtama.domain.wrongnote.controller;
 
+import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteListResponse;
 import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteQuizQuestionResponse;
 import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteQuizResultResponse;
 import com.__SW_engineering.wordtama.domain.wrongnote.dto.WrongNoteQuizSubmitRequest;
@@ -22,10 +23,13 @@ public class WrongNoteController {
     private final WrongNoteService wrongNoteService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<WrongNoteResponse>>> getWrongNotes(
+    public ResponseEntity<ApiResponse<WrongNoteListResponse>> getWrongNotes(
             @AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(
-                ApiResponse.success(wrongNoteService.getWrongNotes(userId), "오답 목록 조회 성공"));
+        WrongNoteListResponse response = new WrongNoteListResponse(
+                wrongNoteService.getWrongNotes(userId),
+                WrongNoteService.WRONG_NOTE_QUIZ_ENTRY_THRESHOLD
+        );
+        return ResponseEntity.ok(ApiResponse.success(response, "오답 목록 조회 성공"));
     }
 
     @DeleteMapping("/{wordId}")

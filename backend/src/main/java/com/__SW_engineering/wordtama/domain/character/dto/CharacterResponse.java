@@ -9,4 +9,5 @@ public class CharacterResponse {
     private String status;
     private int vitality;
     private long coin;
+    private long reviveCost;
 }

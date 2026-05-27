@@ -5,6 +5,7 @@ import com.__SW_engineering.wordtama.domain.quiz.repository.QuizRepository;
 import com.__SW_engineering.wordtama.domain.stats.dto.ProgressResponseDto;
 import com.__SW_engineering.wordtama.domain.stats.dto.QuizAccuracyDto;
 import com.__SW_engineering.wordtama.domain.stats.dto.WeeklyStatDto;
+import com.__SW_engineering.wordtama.domain.word.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class StatsService {
     private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
 
     private final QuizRepository quizRepository;
+    private final WordRepository wordRepository;
 
     @Transactional(readOnly = true)
     public ProgressResponseDto getProgress(Long userId) {
@@ -49,7 +51,7 @@ public class StatsService {
                 .collect(Collectors.toList());
 
         int completedDays = completedDayList.size();
-        int totalDays = quizRepository.findMaxDay();
+        int totalDays = wordRepository.findMaxDay().orElse(0);
 
         return ProgressResponseDto.builder()
                 .completedDays(completedDays)

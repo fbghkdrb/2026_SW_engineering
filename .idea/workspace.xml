@@ -6,14 +6,35 @@
   <component name="ChangeListManager">
     <list default="true" id="15d393d8-8668-45cd-a2fa-c18e89142e12" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build/classes/java/main/com/__SW_engineering/wordtama/domain/user/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/classes/java/main/com/__SW_engineering/wordtama/domain/user/service/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build/classes/java/main/com/__SW_engineering/wordtama/global/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/classes/java/main/com/__SW_engineering/wordtama/global/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build/classes/java/main/com/__SW_engineering/wordtama/global/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/classes/java/main/com/__SW_engineering/wordtama/global/exception/GlobalExceptionHandler.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/resources/main/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/CharacterDisplay.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CharacterDisplay.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/attendance/service/AttendanceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/attendance/service/AttendanceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/dto/CharacterResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/dto/CharacterResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/service/CharacterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/character/service/CharacterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/notification/repository/NotificationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/notification/repository/NotificationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/repository/QuizRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/repository/QuizRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/service/QuizService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/quiz/service/QuizService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/shop/entity/ItemType.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/shop/entity/ItemType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/shop/service/ShopService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/shop/service/ShopService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/stats/service/StatsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/stats/service/StatsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/word/entity/UserWord.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/word/entity/UserWord.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/word/repository/WordRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/word/repository/WordRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/word/service/WordService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/word/service/WordService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/controller/WrongNoteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/controller/WrongNoteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/repository/WrongNoteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/repository/WrongNoteRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/service/WrongNoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/domain/wrongnote/service/WrongNoteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/scheduler/NotificationScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/scheduler/NotificationScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/scheduler/VitalityScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/__SW_engineering/wordtama/global/scheduler/VitalityScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/axiosInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/axiosInstance.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/MainPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/MainPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/QuizPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/QuizPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ShopPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ShopPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StatsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StatsPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/WrongNotePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/WrongNotePage.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,23 +76,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.WordtamaApplication.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
-    "to.speed.mode.migration.done": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.WordtamaApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="WordtamaApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.__SW_engineering.wordtama.WordtamaApplication" />

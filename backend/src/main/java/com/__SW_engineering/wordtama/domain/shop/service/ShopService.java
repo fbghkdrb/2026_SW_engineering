@@ -96,9 +96,9 @@ public class ShopService {
         // 수량 차감
         userItem.decreaseQuantity(1);
 
-        // FEED: vitality +30 적용
+        // FEED: vitalityEffect 만큼 활력 적용
         if (itemType == ItemType.FEED) {
-            characterService.addVitality(userId, 30);
+            characterService.addVitality(userId, itemType.getVitalityEffect());
             Character character = characterRepository.findByUserId(userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
             return UseItemResponse.builder()

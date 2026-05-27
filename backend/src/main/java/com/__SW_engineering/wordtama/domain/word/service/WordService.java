@@ -11,6 +11,7 @@ import com.__SW_engineering.wordtama.domain.word.repository.WordRepository;
 import com.__SW_engineering.wordtama.global.exception.CustomException;
 import com.__SW_engineering.wordtama.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,13 +94,20 @@ public class WordService {
         if (existing.isEmpty()) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-            userWordRepository.save(UserWord.builder()
-                    .user(user)
-                    .word(word)
-                    .isKnown(true)
-                    .isFavorite(false)
-                    .build());
-            return true;
+            try {
+                userWordRepository.saveAndFlush(UserWord.builder()
+                        .user(user)
+                        .word(word)
+                        .isKnown(true)
+                        .isFavorite(false)
+                        .build());
+                return true;
+            } catch (DataIntegrityViolationException e) {
+                UserWord concurrent = userWordRepository.findByUser_IdAndWord_Id(userId, wordId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.WORD_NOT_FOUND));
+                concurrent.toggleKnown();
+                return concurrent.isKnown();
+            }
         }
 
         UserWord userWord = existing.get();
@@ -117,13 +125,20 @@ public class WordService {
         if (existing.isEmpty()) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-            userWordRepository.save(UserWord.builder()
-                    .user(user)
-                    .word(word)
-                    .isKnown(false)
-                    .isFavorite(true)
-                    .build());
-            return true;
+            try {
+                userWordRepository.saveAndFlush(UserWord.builder()
+                        .user(user)
+                        .word(word)
+                        .isKnown(false)
+                        .isFavorite(true)
+                        .build());
+                return true;
+            } catch (DataIntegrityViolationException e) {
+                UserWord concurrent = userWordRepository.findByUser_IdAndWord_Id(userId, wordId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.WORD_NOT_FOUND));
+                concurrent.toggleFavorite();
+                return concurrent.isFavorite();
+            }
         }
 
         UserWord userWord = existing.get();

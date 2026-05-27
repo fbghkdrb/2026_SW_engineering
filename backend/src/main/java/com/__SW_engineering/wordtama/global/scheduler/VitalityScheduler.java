@@ -13,7 +13,7 @@ public class VitalityScheduler {
 
     private final CharacterService characterService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void decreaseVitalityDaily() {
         log.info("[VitalityScheduler] 자정 활력도 감소 시작");
         characterService.decreaseAllVitality();

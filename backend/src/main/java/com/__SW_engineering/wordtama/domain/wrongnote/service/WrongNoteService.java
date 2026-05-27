@@ -37,7 +37,7 @@ public class WrongNoteService {
     private static final int WRONG_NOTE_QUIZ_SIZE = 20;
     private static final int MIN_WRONG_NOTES = 4;
     private static final int VITALITY_GAIN = 20;
-    private static final int WRONG_NOTE_QUIZ_ENTRY_THRESHOLD = 20;
+    public static final int WRONG_NOTE_QUIZ_ENTRY_THRESHOLD = 20;
 
     private final WrongNoteRepository wrongNoteRepository;
     private final DailyQuizPassRepository dailyQuizPassRepository;
@@ -46,6 +46,7 @@ public class WrongNoteService {
     private final WordRepository wordRepository;
     private final UserRepository userRepository;
     private final CharacterService characterService;
+    private final WrongNotePersistenceHelper persistenceHelper;
 
     @Transactional(readOnly = true)
     public List<WrongNoteResponse> getWrongNotes(Long userId) {
@@ -76,15 +77,7 @@ public class WrongNoteService {
                 .collect(Collectors.toList());
 
         for (QuizAnswer answer : wrongAnswers) {
-            Word word = answer.getWord();
-            wrongNoteRepository.findByUserAndWord(user, word)
-                    .ifPresentOrElse(
-                            WrongNote::incrementWrongCount,
-                            () -> wrongNoteRepository.save(WrongNote.builder()
-                                    .user(user)
-                                    .word(word)
-                                    .build())
-                    );
+            persistenceHelper.saveOrIncrement(user, answer.getWord());
         }
     }
 
@@ -111,8 +104,11 @@ public class WrongNoteService {
                 .map(wn -> wn.getWord().getEnglish())
                 .collect(Collectors.toList());
 
+        // fallback용 전체 단어 영어 목록 — 루프 밖에서 1회만 로드
+        List<String> allWordEnglish = wordRepository.findAllEnglish();
+
         return quizNotes.stream()
-                .map(wn -> buildQuizQuestion(wn, wrongWordPool))
+                .map(wn -> buildQuizQuestion(wn, wrongWordPool, allWordEnglish))
                 .collect(Collectors.toList());
     }
 
@@ -166,13 +162,13 @@ public class WrongNoteService {
             coinEarned = 15;
         }
 
-        // pass 기록을 동일 트랜잭션 내에서 저장 (원자성 보장)
-        if (!alreadyPassedToday) { // [PBI-11 수정] 이미 통과 기록 있으면 중복 저장 방지 (정상 응답 반환)
+        // 80% 이상 통과한 경우에만 오늘 pass 기록 저장 (실패 시 당일 재도전 허용)
+        if (qualified && !alreadyPassedToday) {
             dailyQuizPassRepository.save(DailyQuizPass.builder()
                     .user(user)
                     .passDate(LocalDate.now())
                     .quiz(quiz)
-                    .type(DailyQuizPassType.WRONG_QUIZ) // [PBI-11 추가]
+                    .type(DailyQuizPassType.WRONG_QUIZ)
                     .build());
         }
 
@@ -205,7 +201,7 @@ public class WrongNoteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        int wrongNoteCount = wrongNoteRepository.findByUserOrderByWrongCountDesc(user).size();
+        int wrongNoteCount = wrongNoteRepository.countByUser(user);
         if (wrongNoteCount < WRONG_NOTE_QUIZ_ENTRY_THRESHOLD) {
             throw new CustomException(ErrorCode.WRONG_NOTE_COUNT_INSUFFICIENT);
         }
@@ -218,7 +214,8 @@ public class WrongNoteService {
         }
     }
 
-    private WrongNoteQuizQuestionResponse buildQuizQuestion(WrongNote wn, List<String> wrongWordPool) {
+    private WrongNoteQuizQuestionResponse buildQuizQuestion(
+            WrongNote wn, List<String> wrongWordPool, List<String> allWordEnglish) {
         String correctAnswer = wn.getWord().getEnglish();
 
         // 정답을 제외한 오답 보기 풀
@@ -226,19 +223,20 @@ public class WrongNoteService {
                 .filter(e -> !e.equalsIgnoreCase(correctAnswer))
                 .collect(Collectors.toList());
 
-        // 오답 풀에서 3개 부족 시 전체 단어에서 보충
+        // 오답 풀에서 3개 부족 시 전달받은 전체 단어 목록에서 보충 (findAll 중복 호출 없음)
         if (distractorPool.size() < 3) {
-            List<String> allEnglish = wordRepository.findAll().stream()
-                    .map(Word::getEnglish)
-                    .filter(e -> !e.equalsIgnoreCase(correctAnswer)
-                            && !distractorPool.contains(e))
+            List<String> supplement = allWordEnglish.stream()
+                    .filter(e -> !e.equalsIgnoreCase(correctAnswer) && !distractorPool.contains(e))
                     .collect(Collectors.toList());
-            Collections.shuffle(allEnglish);
+            Collections.shuffle(supplement);
             int needed = 3 - distractorPool.size();
-            distractorPool.addAll(allEnglish.stream().limit(needed).collect(Collectors.toList()));
+            distractorPool.addAll(supplement.stream().limit(needed).collect(Collectors.toList()));
         }
 
         Collections.shuffle(distractorPool);
+        if (distractorPool.size() < 3) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_WORDS_FOR_QUIZ);
+        }
         List<String> choices = new ArrayList<>(distractorPool.subList(0, 3));
         choices.add(correctAnswer);
         Collections.shuffle(choices);

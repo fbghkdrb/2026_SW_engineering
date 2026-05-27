@@ -63,12 +63,17 @@ const WrongNotePage = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [deleteError, setDeleteError] = useState("");
 
+  const [quizEntryThreshold, setQuizEntryThreshold] = useState(20);
+
   const fetchWrongNotes = async () => {
     setLoading(true);
     setError(null);
     try {
       const { data } = await getWrongNotes();
-      if (data.success) setWrongNotes(data.data);
+      if (data.success) {
+        setWrongNotes(data.data.wrongNotes);
+        setQuizEntryThreshold(data.data.quizEntryThreshold);
+      }
     } catch {
       setError("오답 목록을 불러오는데 실패했습니다.");
     } finally {
@@ -154,10 +159,10 @@ const WrongNotePage = () => {
           <div className="bg-white/90 backdrop-blur px-4 pt-3 pb-2">
             <div className="max-w-4xl mx-auto">
               <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate("/wrong-notes/quiz")}
-                disabled={wrongNotes.length < 20}
-                style={{ background: wrongNotes.length >= 20 ? "#FF6B35" : undefined }}
+                disabled={wrongNotes.length < quizEntryThreshold}
+                style={{ background: wrongNotes.length >= quizEntryThreshold ? "#FF6B35" : undefined }}
                 className="w-full disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl transition-colors shadow-md">
-                {wrongNotes.length < 20 ? "오답 단어가 20개 이상이어야 퀴즈를 시작할 수 있습니다" : "오답 퀴즈 시작 ✏️"}
+                {wrongNotes.length < quizEntryThreshold ? `오답 단어가 ${quizEntryThreshold}개 이상이어야 퀴즈를 시작할 수 있습니다` : "오답 퀴즈 시작 ✏️"}
               </motion.button>
             </div>
           </div>
